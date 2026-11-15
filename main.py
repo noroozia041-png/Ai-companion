@@ -10,8 +10,8 @@ API_TOKEN = os.getenv("CLOUDFLARE_API_TOKEN")
 ACCOUNT_ID = os.getenv("CLOUDFLARE_ACCOUNT_ID")
 API_URL = f"https://api.cloudflare.com/client/v4/accounts/{ACCOUNT_ID}/ai/v1/chat/completions"
 
-# استفاده از مدل پایدار و مناسب برای فارسی
-MODEL_NAME = "@cf/qwen/qwen2.5-7b-instruct" 
+# مدل جدید، فعال و مناسب برای مکالمات طولانی فارسی
+MODEL_NAME = "@cf/qwen/qwen3.8-27b"
 
 class ChatRequest(BaseModel):
     messages: list
@@ -26,7 +26,6 @@ async def chat(request: ChatRequest):
         "Content-Type": "application/json"
     }
     
-    # پرامپت سیستمی حرفه‌ای برای یک همراه و مشاور همدل
     system_prompt = {
         "role": "system", 
         "content": (
@@ -76,7 +75,7 @@ def read_root():
                 
                 body { 
                     font-family: 'Vazirmatn', Tahoma, sans-serif; 
-                    background-color: #e5ddd5; /* بک‌گراند شبیه واتساپ */
+                    background-color: #e5ddd5; 
                     margin: 0; 
                     padding: 0; 
                     display: flex; 
@@ -112,7 +111,7 @@ def read_root():
                     display: flex; 
                     flex-direction: column; 
                     gap: 15px; 
-                    background-image: url('https://user-images.githubusercontent.com/15075759/28719144-86dc0f70-73b1-11e7-911d-60d70fcded21.png'); /* پترن ملایم */
+                    background-image: url('https://user-images.githubusercontent.com/15075759/28719144-86dc0f70-73b1-11e7-911d-60d70fcded21.png');
                     background-blend-mode: overlay;
                 }
                 
@@ -173,7 +172,6 @@ def read_root():
                 .chat-input-area button:hover { background: #0056b3; }
                 .chat-input-area button:disabled { background: #ccc; cursor: not-allowed; }
 
-                /* انیمیشن تایپ */
                 .typing-indicator { display: flex; gap: 4px; padding: 12px 18px; background: white; border-radius: 15px; border-top-left-radius: 0; width: fit-content; box-shadow: 0 1px 2px rgba(0,0,0,0.1); }
                 .typing-indicator span { width: 6px; height: 6px; background-color: #999; border-radius: 50%; animation: bounce 1.4s infinite ease-in-out both; }
                 .typing-indicator span:nth-child(1) { animation-delay: -0.32s; }
@@ -216,12 +214,10 @@ def read_root():
                     const msg = input.value.trim();
                     if (!msg) return;
 
-                    // نمایش پیام کاربر
                     appendMessage('user', msg);
                     input.value = '';
                     chatHistory.push({ role: 'user', content: msg });
 
-                    // نمایش انیمیشن تایپ
                     const typingId = showTypingIndicator();
                     const sendBtn = document.getElementById('send-btn');
                     sendBtn.disabled = true;
@@ -235,7 +231,6 @@ def read_root():
                         const data = await res.json();
                         const reply = data.reply || data.detail || "خطای نامشخص";
 
-                        // حذف انیمیشن تایپ و نمایش پاسخ
                         removeTypingIndicator(typingId);
                         appendMessage('ai', reply);
                         chatHistory.push({ role: 'assistant', content: reply });
