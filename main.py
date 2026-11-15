@@ -10,11 +10,11 @@ API_TOKEN = os.getenv("CLOUDFLARE_API_TOKEN")
 ACCOUNT_ID = os.getenv("CLOUDFLARE_ACCOUNT_ID")
 API_URL = f"https://api.cloudflare.com/client/v4/accounts/{ACCOUNT_ID}/ai/v1/chat/completions"
 
-# مدل پایدار و تست‌شده کلادفلر
-MODEL_NAME = "@cf/meta/llama-3.1-8b-instruct"
+# مدل جدید، پایدار و مناسب زبان فارسی
+MODEL_NAME = "@cf/qwen/qwen3.8-27b"
 
 class ChatRequest(BaseModel):
-    messages: list  # دریافت کل تاریخچه چت به جای یک پیام
+    messages: list
 
 @app.post("/chat")
 async def chat(request: ChatRequest):
@@ -26,7 +26,6 @@ async def chat(request: ChatRequest):
         "Content-Type": "application/json"
     }
     
-    # اضافه کردن پرامپت سیستمی به ابتدای تاریخچه
     system_prompt = {
         "role": "system", 
         "content": "تو یک همراه خودیاری هستی، نه درمانگر. تشخیص نمی‌دهی و دارو تجویز نمی‌کنی. اگر نشانه‌های خطر دیدی، کاربر را به اورژانس روان‌پزشکی ارجاع بده. لحنت همدلانه، محاوره‌ای و کوتاه باشد."
@@ -89,21 +88,18 @@ def read_root():
                 </div>
             </div>
             <script>
-                let chatHistory = []; // ذخیره تاریخچه چت
+                let chatHistory = []; 
 
                 async function send() {
                     const input = document.getElementById('msg');
                     const msg = input.value.trim();
                     if (!msg) return;
 
-                    // 1. نمایش پیام کاربر در صفحه
                     appendMessage('user', msg);
                     input.value = '';
                     
-                    // 2. افزودن پیام به تاریخچه
                     chatHistory.push({ role: 'user', content: msg });
 
-                    // 3. غیرفعال کردن دکمه و نمایش وضعیت
                     const sendBtn = document.getElementById('send-btn');
                     sendBtn.disabled = true;
                     sendBtn.innerText = '...';
@@ -117,30 +113,27 @@ def read_root():
                         const data = await res.json();
                         const reply = data.reply || data.detail || "خطای نامشخص";
 
-                        // 4. نمایش پاسخ هوش مصنوعی و افزودن به تاریخچه
                         appendMessage('ai', reply);
                         chatHistory.push({ role: 'assistant', content: reply });
 
                     } catch(e) {
                         appendMessage('ai', "خطا در ارتباط با سرور. دوباره تلاش کنید.");
-                        chatHistory.pop(); // در صورت خطا، پیام کاربر را از تاریخچه حذف کن
+                        chatHistory.pop(); 
                     } finally {
                         sendBtn.disabled = false;
                         sendBtn.innerText = 'ارسال';
                     }
                 }
 
-                // تابع کمکی برای اضافه کردن پیام به صفحه
                 function appendMessage(role, text) {
                     const chatBox = document.getElementById('chat-box');
                     const msgDiv = document.createElement('div');
                     msgDiv.className = `message ${role}`;
                     msgDiv.innerText = text;
                     chatBox.appendChild(msgDiv);
-                    chatBox.scrollTop = chatBox.scrollHeight; // اسکرول خودکار به پایین
+                    chatBox.scrollTop = chatBox.scrollHeight; 
                 }
 
-                // ارسال با زدن دکمه Enter
                 document.getElementById('msg').addEventListener('keypress', function (e) {
                     if (e.key === 'Enter') send();
                 });
