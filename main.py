@@ -42,12 +42,13 @@ async def chat(request: ChatRequest):
     payload = {
         "model": MODEL_NAME,
         "messages": [system_prompt] + request.messages,
-        "max_tokens": 800, # تنظیم روی ۸۰۰ برای جلوگیری از بریدگی و حفظ سرعت
+        "max_tokens": 800,
         "temperature": 0.75 
     }
     
     try:
-        response = requests.post(API_URL, headers=headers, json=payload, timeout=30)
+        # تایم‌اوت به ۶۰ ثانیه افزایش یافت تا خطای Read Timeout رخ ندهد
+        response = requests.post(API_URL, headers=headers, json=payload, timeout=60)
         response.raise_for_status() 
         data = response.json()
         
@@ -98,17 +99,36 @@ def read_root():
                 .chat-header { 
                     background: linear-gradient(135deg, #2c3e50 0%, #3498db 100%);
                     color: white; 
-                    padding: 15px; 
+                    padding: 10px 15px; 
                     display: flex; 
                     align-items: center; 
+                    justify-content: space-between; /* فاصله دادن بین پروفایل و دکمه چت جدید */
                     box-shadow: 0 2px 5px rgba(0,0,0,0.2);
                     flex-shrink: 0; 
                     z-index: 10;
                 }
+                .header-profile { display: flex; align-items: center; }
                 .header-info { margin-right: 15px; }
                 .header-info h2 { margin: 0; font-size: 18px; }
                 .header-info p { margin: 0; font-size: 12px; color: #b0c4de; }
                 .online-dot { height: 10px; width: 10px; background-color: #25d366; border-radius: 50%; display: inline-block; margin-left: 5px; }
+
+                /* دکمه چت جدید */
+                .new-chat-btn {
+                    background: rgba(255, 255, 255, 0.2);
+                    border: none;
+                    color: white;
+                    width: 40px;
+                    height: 40px;
+                    border-radius: 50%;
+                    font-size: 20px;
+                    cursor: pointer;
+                    display: flex;
+                    align-items: center;
+                    justify-content: center;
+                    transition: background 0.3s;
+                }
+                .new-chat-btn:hover { background: rgba(255, 255, 255, 0.4); }
 
                 .chat-messages { 
                     flex: 1; 
@@ -154,19 +174,27 @@ def read_root():
                     background: #f0f0f0; 
                     border-top: 1px solid #ddd; 
                     flex-shrink: 0;
+                    align-items: flex-end; /* برای تراز کردن دکمه با پایین تکست‌اریا */
                 }
-                .chat-input-area input { 
+                
+                /* تغییر کادر متن به textarea */
+                .chat-input-area textarea { 
                     flex: 1; 
                     padding: 12px 15px; 
                     border: none; 
-                    border-radius: 25px; 
+                    border-radius: 20px; 
                     outline: none; 
                     font-family: inherit; 
                     font-size: 14px;
                     box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+                    resize: none; /* غیرفعال کردن تغییر اندازه دستی */
+                    max-height: 100px; /* حداکثر ارتفاع قبل از اسکرول */
+                    line-height: 1.5;
+                    overflow-y: auto;
                 }
+                
                 .chat-input-area button { 
-                    padding: 0 20px; 
+                    padding: 12px 20px; 
                     margin-right: 10px; 
                     background: #3498db; 
                     color: white; 
@@ -176,6 +204,9 @@ def read_root():
                     font-family: inherit; 
                     font-weight: bold;
                     transition: background 0.3s;
+                    height: 45px;
+                    display: flex;
+                    align-items: center;
                 }
                 .chat-input-area button:hover { background: #2980b9; }
                 .chat-input-area button:disabled { background: #ccc; cursor: not-allowed; }
@@ -190,50 +221,89 @@ def read_root():
         <body>
             <div class="chat-container">
                 <div class="chat-header">
-                    <div class="avatar ai" style="background: white; color: #2c3e50;">🧠</div>
-                    <div class="header-info">
-                        <h2>مشاور هوش مصنوعی <span class="online-dot"></span></h2>
-                        <p>متخصص روابط و احساسات</p>
+                    <div class="header-profile">
+                        <div class="avatar ai" style="background: white; color: #2c3e50;">🧠</div>
+                        <div class="header-info">
+                            <h2>مشاور هوش مصنوعی <span class="online-dot"></span></h2>
+                            <p>متخصص روابط و احساسات</p>
+                        </div>
                     </div>
+                    <button class="new-chat-btn" onclick="startNewChat()" title="چت جدید">🗑️</button>
                 </div>
                 
                 <div class="chat-messages" id="chat-box">
-                    <div class="message-row ai">
-                        <div class="avatar ai">🧠</div>
-                        <div class="message-content">
-                            <div class="sender-name">مشاور</div>
-                            <div class="message-bubble">سلام! من اینجا هستم تا در مورد روابط، احساسات و چالش‌هایی که داری با هم صحبت کنیم. امروز چه چیزی ذهن تو را مشغول کرده؟</div>
-                        </div>
-                    </div>
+                    <!-- پیام‌ها با جاوااسکریپت لود می‌شوند -->
                 </div>
                 
                 <div class="chat-input-area">
-                    <input id="msg" type="text" placeholder="مشکل یا احساس خود را بنویسید..." autocomplete="off">
+                    <textarea id="msg" placeholder="مشکل یا احساس خود را بنویسید..." rows="1"></textarea>
                     <button id="send-btn" onclick="send()">ارسال</button>
                 </div>
             </div>
             
             <script>
+                const initialGreeting = "سلام! من اینجا هستم تا در مورد روابط، احساسات و چالش‌هایی که داری با هم صحبت کنیم. امروز چه چیزی ذهن تو را مشغول کرده؟";
                 let chatHistory = []; 
                 const chatBox = document.getElementById('chat-box');
                 const msgInput = document.getElementById('msg');
+
+                // ۱. لود کردن تاریخچه از حافظه مرورگر در زمان باز شدن صفحه
+                function loadChat() {
+                    const savedChat = localStorage.getItem('aiCounselorChat');
+                    if (savedChat) {
+                        chatHistory = JSON.parse(savedChat);
+                        chatHistory.forEach(msg => appendMessageUI(msg.role === 'user' ? 'user' : 'ai', msg.content));
+                    } else {
+                        // اگر چت قبلی نبود، پیام خوش‌آمدگویی اولیه
+                        appendMessageUI('ai', initialGreeting);
+                    }
+                    chatBox.scrollTop = chatBox.scrollHeight;
+                }
+
+                // ۲. ذخیره تاریخچه در حافظه مرورگر
+                function saveChat() {
+                    localStorage.setItem('aiCounselorChat', JSON.stringify(chatHistory));
+                }
+
+                // ۳. شروع چت جدید
+                function startNewChat() {
+                    if (confirm("آیا مطمئن هستید که می‌خواهید تاریخچه این گفتگو را پاک کنید و چت جدیدی شروع کنید؟")) {
+                        chatHistory = [];
+                        localStorage.removeItem('aiCounselorChat');
+                        chatBox.innerHTML = '';
+                        appendMessageUI('ai', initialGreeting);
+                    }
+                }
+
+                // ۴. تنظیم ارتفاع خودکار کادر متن با تایپ کردن
+                msgInput.addEventListener('input', function() {
+                    this.style.height = 'auto';
+                    this.style.height = (this.scrollHeight) + 'px';
+                });
 
                 async function send() {
                     const msg = msgInput.value.trim();
                     if (!msg) return;
 
-                    appendMessage('user', msg);
-                    msgInput.value = '';
-                    chatHistory.push({ role: 'user', content: msg });
+                    // ریست کردن ارتفاع کادر متن
+                    msgInput.style.height = 'auto';
 
-                    // مدیریت پنجره لغزان: اگر تاریخچه بیشتر از ۱۲ پیام شد، قدیمی‌ترین‌ها را حذف کن
+                    appendMessageUI('user', msg);
+                    msgInput.value = '';
+                    
+                    chatHistory.push({ role: 'user', content: msg });
+                    saveChat(); // ذخیره پیام کاربر
+
+                    // مدیریت پنجره لغزان
                     if (chatHistory.length > 12) {
                         chatHistory = chatHistory.slice(chatHistory.length - 12);
+                        saveChat();
                     }
 
                     const typingId = showTypingIndicator();
                     const sendBtn = document.getElementById('send-btn');
                     sendBtn.disabled = true;
+                    sendBtn.innerText = '...';
                     
                     try {
                         const res = await fetch('/chat', {
@@ -245,24 +315,27 @@ def read_root():
                         const reply = data.reply || data.detail || "خطای نامشخص";
 
                         removeTypingIndicator(typingId);
-                        appendMessage('ai', reply);
+                        appendMessageUI('ai', reply);
                         
                         chatHistory.push({ role: 'assistant', content: reply });
-                        // دوباره چک کردن محدودیت بعد از اضافه شدن پیام هوش مصنوعی
+                        saveChat(); // ذخیره پاسخ هوش مصنوعی
+
                         if (chatHistory.length > 12) {
                             chatHistory = chatHistory.slice(chatHistory.length - 12);
+                            saveChat();
                         }
 
                     } catch(e) {
                         removeTypingIndicator(typingId);
-                        appendMessage('ai', "ارتباط برقرار نشد. اینترنت را چک کن و دوباره تلاش کن.");
+                        appendMessageUI('ai', "ارتباط برقرار نشد. اینترنت را چک کن و دوباره تلاش کن.");
                         chatHistory.pop(); 
                     } finally {
                         sendBtn.disabled = false;
+                        sendBtn.innerText = 'ارسال';
                     }
                 }
 
-                function appendMessage(role, text) {
+                function appendMessageUI(role, text) {
                     if (!text || !text.trim()) return; 
 
                     const row = document.createElement('div');
@@ -324,9 +397,8 @@ def read_root():
                     if (el) el.remove();
                 }
 
-                msgInput.addEventListener('keypress', function (e) {
-                    if (e.key === 'Enter') send();
-                });
+                // در زمان باز شدن صفحه، تابع لود اجرا شود
+                window.onload = loadChat;
             </script>
         </body>
     </html>
