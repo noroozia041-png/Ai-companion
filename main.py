@@ -97,7 +97,6 @@ def read_root():
                     display: flex; 
                     flex-direction: column; 
                     background-color: #e6ebee;
-                    /* پترن پس‌زمینه شبیه تلگرام */
                     background-image: url('https://web.telegram.org/a/chat-bg-pattern-light.ee148af169f9c5c9a46a.png');
                     background-size: cover;
                     background-blend-mode: soft-light;
@@ -114,9 +113,7 @@ def read_root():
                     border-bottom: 1px solid #e0e0e0;
                     flex-shrink: 0; 
                     z-index: 10;
-                    cursor: pointer;
                 }
-                .tg-header:hover { background-color: #f4f4f5; }
                 
                 .header-profile { display: flex; align-items: center; }
                 .header-avatar { 
@@ -146,12 +143,10 @@ def read_root():
                 }
                 
                 .message-row { display: flex; align-items: flex-end; width: 100%; }
-                /* پیام‌های شما در سمت چپ (استاندارد تلگرام فارسی) */
                 .message-row.user { justify-content: flex-start; flex-direction: row-reverse; }
-                /* پیام‌های هوش مصنوعی در سمت راست */
                 .message-row.ai { justify-content: flex-start; }
                 
-                .avatar { display: none; } /* در تلگرام آواتار داخل چت نشان داده نمی‌شود */
+                .avatar { display: none; }
                 
                 .message-content { max-width: 75%; display: flex; flex-direction: column; }
                 
@@ -166,18 +161,16 @@ def read_root():
                     box-shadow: 0 1px 1px rgba(0,0,0,0.1);
                 }
                 
-                /* حباب پیام کاربر (سبز روشن تلگرام) */
                 .message-row.user .message-bubble { 
                     background-color: #eeffde; 
                     border-top-right-radius: 12px;
-                    border-bottom-right-radius: 4px; /* گوشه تیز */
+                    border-bottom-right-radius: 4px; 
                 }
                 
-                /* حباب پیام هوش مصنوعی (سفید) */
                 .message-row.ai .message-bubble { 
                     background-color: #ffffff; 
                     border-top-left-radius: 12px;
-                    border-bottom-left-radius: 4px; /* گوشه تیز */
+                    border-bottom-left-radius: 4px; 
                 }
 
                 /* ناحیه تایپ کردن */
@@ -233,19 +226,29 @@ def read_root():
                 @keyframes bounce { 0%, 80%, 100% { transform: scale(0); } 40% { transform: scale(1); } }
 
                 /* ========================================== */
-                /* 🖥️ تنظیمات دسکتاپ (شبیه تلگرام وب) */
+                /* 🖥️ تنظیمات دسکتاپ (تمام صفحه مثل تلگرام دسکتاپ) */
                 /* ========================================== */
                 @media (min-width: 768px) {
                     .tg-container { 
-                        max-width: 900px; 
-                        height: 95dvh; 
-                        border-radius: 10px; 
-                        box-shadow: 0 10px 40px rgba(0,0,0,0.15); 
-                        border: 1px solid rgba(0,0,0,0.1);
+                        max-width: 100%; /* پوشش تمام عرض صفحه */
+                        height: 100dvh;  /* پوشش تمام ارتفاع صفحه */
+                        border-radius: 0; /* حذف گوشه‌های گرد */
+                        box-shadow: none; /* حذف سایه */
+                        border: none;
                     }
-                    .tg-header { border-top-left-radius: 10px; border-top-right-radius: 10px; }
-                    .tg-input-area { border-bottom-left-radius: 10px; border-bottom-right-radius: 10px; }
-                    .message-content { max-width: 65%; }
+                    
+                    /* محدود کردن عرض حباب‌ها در مانیتورهای بزرگ تا خوانایی حفظ شود */
+                    .message-content { 
+                        max-width: 60%; 
+                    }
+                    
+                    /* فاصله دادن هدر و کادر تایپ در مانیتورهای خیلی عریض */
+                    .tg-header { 
+                        padding: 10px 10%; 
+                    }
+                    .tg-input-area { 
+                        padding: 15px 10%; 
+                    }
                 }
             </style>
         </head>
