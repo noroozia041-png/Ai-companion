@@ -13,40 +13,36 @@ API_URL = f"https://api.cloudflare.com/client/v4/accounts/{ACCOUNT_ID}/ai/v1/cha
 MODEL_NAME = "@cf/qwen/qwen3.8-27b"
 
 # ==========================================
-# 🎯 بخش تنظیمات پرامپت (شخصیت و قوانین مرهم)
-# ==========================================
-# ==========================================
-# 🎯 بخش تنظیمات پرامپت فوق‌تخصصی (شخصیت مرهم)
+# 🎯 بخش تنظیمات پرامپت فوق‌تخصصی (نسخه جامع)
 # ==========================================
 SYSTEM_PROMPT = """
 [هویت و نقش]
-تو «مرهم» هستی؛ یک مشاور روانشناس و متخصص ارشد روابط (خانوادگی، عاطفی و بین‌فردی) با ۲۰ سال تجربه بالینی. 
-تو تسلط کامل بر رویکرد «شناختی-رفتاری (CBT)»، «ارتباط بدون خشونت (NVC)» و «نظریه دلبستگی (Attachment Theory)» داری.
+تو «مرهم» هستی؛ یک مشاور روانشناس و متخصص ارشد سلامت روان با ۲۰ سال تجربه بالینی. 
+حوزه‌های تخصص تو شامل: روابط (خانوادگی، عاطفی، بین‌فردی)، مدیریت اضطراب و استرس، افسردگی خفیف، تقویت اعتماد به نفس و رشد فردی است.
+تو تسلط کامل بر رویکرد «شناختی-رفتاری (CBT)»، «ارتباط بدون خشونت (NVC)» و «نظریه دلبستگی» داری.
 تو یک درمانگر بالینی نیستی و حق تشخیص بیماری یا تجویز دارو نداری.
 
 [لحن و شخصیت]
-- لحن تو باید بسیار آرام، گرم، همدلانه و سرشار از اطمینان‌بخشی باشد. (مثل یک پناهگاه امن).
-- هرگز قضاوت نکن، سرزنش نکن و طرف هیچ‌کس را نگیر.
-- از کلمات کلیشه‌ای و رباتیک استفاده نکن. مثل یک انسان واقعی و با تجربه صحبت کن.
+- لحن تو باید بسیار آرام، گرم، همدلانه، بدون قضاوت و سرشار از اطمینان‌بخشی باشد. (مثل یک پناهگاه امن).
+- هرگز طرف کسی را نگیر و از کلمات کلیشه‌ای و رباتیک استفاده نکن. مثل یک انسان دانا و مهربان صحبت کن.
 
 [اصول درمانی که باید رعایت کنی]
-۱. اعتباربخشی (Validation): همیشه ابتدا احساس کاربر را ببین و تایید کن که حق دارد چنین حسی داشته باشد. (مثلاً: «کاملاً درک می‌کنم که در این شرایط احساس بی‌اعتمادی کنی، کاملاً طبیعیه»).
-۲. کاوش در احساسات زیرین: خشم و نفرت معمولاً پوششی برای ترس، تنهایی یا نیاز به دیده شدن هستند. سعی کن نیاز پنهان کاربر را کشف کنی.
-۳. ارتباط بدون خشونت (NVC): به جای تمرکز بر «چه کسی مقصر است»، روی «چه اتفاقی افتاد، چه حسی داشتی و چه نیازی داری» تمرکز کن.
-۴. سوالات سقراطی: به جای نصیحت مستقیم و دادن ماهی، ماهیگیری یاد بده. با سوالات عمیق، کاربر را به خودآگاهی برسان.
+۱. اعتباربخشی (Validation): همیشه ابتدا احساس کاربر را ببین و تایید کن که حق دارد چنین حسی داشته باشد.
+۲. کشف ریشه (Root Cause): احساسات منفی معمولاً پوششی برای نیازهای برآورده‌نشده هستند. سعی کن نیاز پنهان کاربر را کشف کنی.
+۳. ابزار عملی: از تکنیک‌های CBT و NVC برای ارائه راهکار عملی استفاده کن.
+۴. سوالات سقراطی: به جای نصیحت مستقیم، با سوالات عمیق کاربر را به خودآگاهی برسان.
 
-[ساختار پاسخ‌دهی (بسیار مهم)]
-پاسخ‌های تو باید همیشه از این الگوی ۳ مرحله‌ای پیروی کنند:
-1. **آینه‌سازی و همدلی:** یک پاراگراف کوتاه برای درک احساسات کاربر.
-2. **بازتعریف یا ارائه ابزار:** یک زاویه دید جدید (Reframing) یا یک تکنیک عملی از NVC (مثل نحوه استفاده از جملات «من»).
+[ساختار پاسخ‌دهی]
+پاسخ‌ها باید همیشه از این الگوی ۳ مرحله‌ای پیروی کنند:
+1. **آینه‌سازی و همدلی:** یک پاراگراف کوتاه برای درک عمیق احساسات.
+2. **بازتعریف یا ارائه ابزار:** یک زاویه دید جدید یا یک تکنیک عملی.
 3. **سوال پایانی:** یک سوال کوتاه و هوشمندانه برای ادامه مسیر.
 
 [خط قرمزها]
-- پاسخ‌ها نباید خیلی طولانی باشند (حداکثر ۱۵۰ کلمه). از حاشیه رفتن خودداری کن.
+- پاسخ‌ها نباید خیلی طولانی باشند (حداکثر ۱۵۰ کلمه).
 - هرگز جمله‌ات را نیمه‌کاره رها نکن. در انتهای هر پیام حتماً یک سوال بپرس.
-- اگر کاربر نشانه‌های آزار و اذیت شدید، خودکشی یا بحران حاد را نشان داد، بلافاصله فضا را ترک کن و با دلسوزی او را به اورژانس اجتماعی (۱۲۳) یا صدای مشاور (۱۴۸۰) ارجاع بده.
+- اگر کاربر نشانه‌های آزار و اذیت شدید، خودکشی یا بحران حاد را نشان داد، با دلسوزی او را به اورژانس اجتماعی (۱۲۳) یا صدای مشاور (۱۴۸۰) ارجاع بده.
 """
-# ==========================================
 # ==========================================
 
 class ChatRequest(BaseModel):
@@ -101,297 +97,192 @@ def read_root():
             <style>
                 @import url('https://fonts.googleapis.com/css2?family=Vazirmatn:wght@300;400;500;700&display=swap');
                 
-                /* پالت رنگی آرام‌بخش برای مرهم */
                 :root {
-                    --bg-body: #f0f2f5;
-                    --sidebar-bg: #ffffff;
-                    --chat-bg: #f7f9fc;
-                    --primary: #4f46e5; /* Indigo ملایم */
-                    --primary-hover: #4338ca;
-                    --text-main: #1f2937;
-                    --text-muted: #6b7280;
-                    --user-bubble: #e0e7ff; /* آبی بسیار ملایم */
-                    --ai-bubble: #ffffff;
-                    --border-color: #e5e7eb;
+                    --bg-body: #f0f2f5; --sidebar-bg: #ffffff; --chat-bg: #f7f9fc;
+                    --primary: #4f46e5; --primary-hover: #4338ca;
+                    --text-main: #1f2937; --text-muted: #6b7280;
+                    --user-bubble: #e0e7ff; --ai-bubble: #ffffff; --border-color: #e5e7eb;
                 }
                 
                 html, body { height: 100%; margin: 0; padding: 0; overflow: hidden; background-color: var(--bg-body); }
+                body { font-family: 'Vazirmatn', Tahoma, sans-serif; display: flex; color: var(--text-main); }
                 
-                body { 
-                    font-family: 'Vazirmatn', Tahoma, sans-serif; 
-                    display: flex; 
-                    color: var(--text-main);
-                }
-                
-                /* اسکرول‌بار ظریف */
                 ::-webkit-scrollbar { width: 6px; }
-                ::-webkit-scrollbar-track { background: transparent; }
                 ::-webkit-scrollbar-thumb { background: #cbd5e1; border-radius: 10px; }
-                ::-webkit-scrollbar-thumb:hover { background: #94a3b8; }
 
                 /* ========================================== */
-                /* 🗂️ سایدبار */
+                /* 👤 صفحه انتخاب و ساخت پروفایل */
                 /* ========================================== */
+                .profile-screen {
+                    position: fixed; top: 0; left: 0; width: 100%; height: 100%;
+                    background: linear-gradient(135deg, #f0f2f5 0%, #e0e7ff 100%);
+                    display: flex; flex-direction: column; align-items: center; justify-content: center;
+                    z-index: 1000; padding: 20px; box-sizing: border-box;
+                }
+                .profile-card {
+                    background: white; padding: 30px; border-radius: 24px;
+                    box-shadow: 0 10px 30px rgba(0,0,0,0.08); width: 100%; max-width: 400px;
+                    text-align: center;
+                }
+                .profile-logo { font-size: 50px; margin-bottom: 10px; }
+                .profile-title { color: var(--primary); margin: 0 0 10px 0; font-size: 24px; }
+                .profile-subtitle { color: var(--text-muted); font-size: 14px; margin-bottom: 25px; }
+                
+                .input-group { display: flex; flex-direction: column; gap: 15px; }
+                .input-group input {
+                    padding: 15px; border: 2px solid var(--border-color); border-radius: 12px;
+                    font-family: inherit; font-size: 15px; outline: none; transition: border 0.3s;
+                    text-align: center;
+                }
+                .input-group input:focus { border-color: var(--primary); }
+                .btn-primary {
+                    padding: 15px; background: var(--primary); color: white; border: none;
+                    border-radius: 12px; font-family: inherit; font-size: 16px; font-weight: 700;
+                    cursor: pointer; transition: background 0.2s;
+                }
+                .btn-primary:hover { background: var(--primary-hover); }
+
+                .profile-list {
+                    margin-top: 25px; border-top: 1px solid var(--border-color); padding-top: 20px;
+                    display: flex; flex-direction: column; gap: 10px; max-height: 200px; overflow-y: auto;
+                }
+                .profile-item {
+                    display: flex; align-items: center; gap: 12px; padding: 12px;
+                    border-radius: 12px; background: #f9fafb; cursor: pointer;
+                    border: 1px solid var(--border-color); transition: all 0.2s;
+                }
+                .profile-item:hover { background: #f3f4f6; border-color: #d1d5db; transform: translateY(-2px); }
+                .profile-avatar-mini {
+                    width: 35px; height: 35px; border-radius: 50%;
+                    background: linear-gradient(135deg, #818cf8, #4f46e5); color: white;
+                    display: flex; align-items: center; justify-content: center; font-weight: bold;
+                }
+
+                /* ========================================== */
+                /* 🗂️ سایدبار و چت اصلی */
+                /* ========================================== */
+                .main-app { display: flex; width: 100%; height: 100dvh; }
+                
                 .sidebar {
-                    width: 280px;
-                    background-color: var(--sidebar-bg);
-                    border-left: 1px solid var(--border-color);
-                    display: flex;
-                    flex-direction: column;
-                    height: 100dvh;
-                    transition: transform 0.3s cubic-bezier(0.4, 0, 0.2, 1);
-                    z-index: 100;
-                    box-shadow: 2px 0 10px rgba(0,0,0,0.02);
+                    width: 280px; background-color: var(--sidebar-bg); border-left: 1px solid var(--border-color);
+                    display: flex; flex-direction: column; height: 100dvh; z-index: 100;
                 }
                 
                 .sidebar-header {
-                    padding: 20px 20px 10px 20px;
-                    font-weight: 700;
-                    font-size: 18px;
-                    color: var(--primary);
-                    display: flex;
-                    align-items: center;
-                    gap: 8px;
+                    padding: 20px; font-weight: 700; font-size: 18px; color: var(--primary);
+                    display: flex; align-items: center; gap: 8px;
                 }
+
+                .user-info-box {
+                    margin: 0 15px 15px 15px; padding: 12px;
+                    background: #f3f4f6; border-radius: 12px;
+                    display: flex; align-items: center; justify-content: space-between;
+                }
+                .user-info-name { font-size: 14px; font-weight: 700; color: var(--text-main); }
+                .switch-profile-btn {
+                    background: transparent; border: none; color: var(--primary);
+                    font-size: 12px; cursor: pointer; font-family: inherit;
+                }
+                .switch-profile-btn:hover { text-decoration: underline; }
 
                 .new-chat-btn-sidebar {
-                    margin: 0 15px 15px 15px;
-                    padding: 12px;
-                    background-color: var(--primary);
-                    border: none;
-                    border-radius: 12px;
-                    font-family: inherit;
-                    font-size: 14px;
-                    font-weight: 500;
-                    color: #ffffff;
-                    cursor: pointer;
-                    display: flex;
-                    align-items: center;
-                    justify-content: center;
-                    gap: 8px;
-                    transition: background 0.2s, transform 0.1s;
-                    box-shadow: 0 4px 12px rgba(79, 70, 229, 0.2);
+                    margin: 0 15px 15px 15px; padding: 12px; background-color: var(--primary);
+                    border: none; border-radius: 12px; font-family: inherit; font-size: 14px;
+                    font-weight: 500; color: #ffffff; cursor: pointer; display: flex;
+                    align-items: center; justify-content: center; gap: 8px; transition: background 0.2s;
                 }
                 .new-chat-btn-sidebar:hover { background-color: var(--primary-hover); }
-                .new-chat-btn-sidebar:active { transform: scale(0.98); }
 
-                .chat-list {
-                    flex: 1;
-                    overflow-y: auto;
-                    padding: 0 10px;
-                }
-
+                .chat-list { flex: 1; overflow-y: auto; padding: 0 10px; }
                 .chat-item {
-                    padding: 12px;
-                    margin-bottom: 4px;
-                    border-radius: 10px;
-                    cursor: pointer;
-                    font-size: 14px;
-                    color: var(--text-main);
-                    white-space: nowrap;
-                    overflow: hidden;
-                    text-overflow: ellipsis;
-                    display: flex;
-                    justify-content: space-between;
-                    align-items: center;
-                    transition: all 0.2s ease;
+                    padding: 12px; margin-bottom: 4px; border-radius: 10px; cursor: pointer;
+                    font-size: 14px; display: flex; justify-content: space-between; align-items: center;
                 }
                 .chat-item:hover { background-color: #f3f4f6; }
                 .chat-item.active { background-color: #f3f4f6; font-weight: 700; color: var(--primary); }
-                
-                .delete-chat-icon {
-                    color: #ef4444;
-                    font-size: 14px;
-                    opacity: 0;
-                    transition: opacity 0.2s;
-                    padding: 4px;
-                }
+                .delete-chat-icon { color: #ef4444; opacity: 0; padding: 4px; font-size: 14px;}
                 .chat-item:hover .delete-chat-icon { opacity: 1; }
 
-                /* ========================================== */
-                /* 💬 بخش اصلی چت */
-                /* ========================================== */
                 .main-chat {
-                    flex: 1;
-                    display: flex;
-                    flex-direction: column;
-                    background-color: var(--chat-bg);
-                    background-image: radial-gradient(#e5e7eb 1px, transparent 1px);
-                    background-size: 20px 20px;
+                    flex: 1; display: flex; flex-direction: column; background-color: var(--chat-bg);
+                    background-image: radial-gradient(#e5e7eb 1px, transparent 1px); background-size: 20px 20px;
                     height: 100dvh;
-                    position: relative;
                 }
                 
                 .tg-header { 
-                    background-color: rgba(255, 255, 255, 0.85);
-                    backdrop-filter: blur(10px);
-                    -webkit-backdrop-filter: blur(10px);
-                    color: var(--text-main); 
-                    padding: 12px 20px; 
-                    display: flex; 
-                    align-items: center; 
-                    border-bottom: 1px solid var(--border-color);
-                    flex-shrink: 0; 
-                    z-index: 10;
+                    background-color: rgba(255, 255, 255, 0.85); backdrop-filter: blur(10px);
+                    padding: 12px 20px; display: flex; align-items: center; 
+                    border-bottom: 1px solid var(--border-color); z-index: 10;
                 }
-                
-                .menu-btn {
-                    display: none; 
-                    background: transparent; border: none; font-size: 24px; 
-                    color: var(--text-muted); cursor: pointer; margin-left: 15px;
-                }
-
+                .menu-btn { display: none; background: transparent; border: none; font-size: 24px; color: var(--text-muted); cursor: pointer; margin-left: 15px; }
                 .header-profile { display: flex; align-items: center; }
                 .header-avatar { 
-                    width: 46px; height: 46px; border-radius: 50%; 
-                    background: linear-gradient(135deg, #818cf8, #4f46e5); 
-                    color: white; display: flex; align-items: center; justify-content: center; 
-                    font-size: 24px; margin-left: 15px;
-                    box-shadow: 0 4px 10px rgba(79, 70, 229, 0.3);
-                    position: relative;
+                    width: 46px; height: 46px; border-radius: 50%; background: linear-gradient(135deg, #818cf8, #4f46e5);
+                    color: white; display: flex; align-items: center; justify-content: center; font-size: 24px; margin-left: 15px;
                 }
-                /* انیمیشن ضربان برای آواتار */
-                .header-avatar::after {
-                    content: '';
-                    position: absolute;
-                    width: 100%; height: 100%;
-                    border-radius: 50%;
-                    border: 2px solid #818cf8;
-                    animation: pulse 2s infinite;
-                    opacity: 0;
-                }
-                @keyframes pulse {
-                    0% { transform: scale(1); opacity: 0.5; }
-                    100% { transform: scale(1.3); opacity: 0; }
-                }
-
                 .header-info h2 { margin: 0; font-size: 18px; font-weight: 700; color: var(--primary); }
                 .header-info p { margin: 4px 0 0 0; font-size: 13px; color: var(--text-muted); }
 
-                .tg-messages { 
-                    flex: 1; padding: 25px 20px; overflow-y: auto; 
-                    display: flex; flex-direction: column; gap: 16px; 
-                }
-                
+                .tg-messages { flex: 1; padding: 25px 20px; overflow-y: auto; display: flex; flex-direction: column; gap: 16px; }
                 .message-row { display: flex; align-items: flex-end; width: 100%; }
                 .message-row.user { justify-content: flex-start; flex-direction: row-reverse; }
                 .message-row.ai { justify-content: flex-start; }
-                
                 .message-content { max-width: 75%; display: flex; flex-direction: column; }
                 
                 .message-bubble { 
-                    padding: 14px 18px; 
-                    border-radius: 18px; 
-                    line-height: 1.7; 
-                    font-size: 15px; 
-                    word-wrap: break-word; 
-                    position: relative;
-                    animation: slideUp 0.3s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+                    padding: 14px 18px; border-radius: 18px; line-height: 1.7; font-size: 15px; 
+                    position: relative; animation: slideUp 0.3s ease-out forwards;
                 }
-                
-                /* استایل‌دهی به مارک‌داون */
                 .message-bubble p { margin: 0 0 10px 0; }
                 .message-bubble p:last-child { margin-bottom: 0; }
                 .message-bubble strong { font-weight: 700; color: var(--primary); }
                 .message-bubble ul, .message-bubble ol { margin: 10px 0; padding-right: 24px; }
-                .message-bubble li { margin-bottom: 6px; }
 
-                /* حباب کاربر */
                 .message-row.user .message-bubble { 
-                    background-color: var(--user-bubble); 
-                    color: #1e1b4b;
-                    border-top-right-radius: 4px; 
-                    border-bottom-left-radius: 18px;
-                    border-bottom-right-radius: 18px;
-                    box-shadow: 0 2px 8px rgba(224, 231, 255, 0.5);
+                    background-color: var(--user-bubble); color: #1e1b4b;
+                    border-top-right-radius: 4px; border-bottom-left-radius: 18px; border-bottom-right-radius: 18px;
                 }
-                /* حباب هوش مصنوعی */
                 .message-row.ai .message-bubble { 
-                    background-color: var(--ai-bubble); 
-                    border: 1px solid var(--border-color);
-                    border-top-left-radius: 4px; 
-                    border-bottom-left-radius: 18px;
-                    border-bottom-right-radius: 18px;
+                    background-color: var(--ai-bubble); border: 1px solid var(--border-color);
+                    border-top-left-radius: 4px; border-bottom-left-radius: 18px; border-bottom-right-radius: 18px;
                     box-shadow: 0 4px 15px rgba(0,0,0,0.03);
                 }
 
                 .copy-btn {
-                    position: absolute; bottom: -24px; left: 10px;
-                    background: transparent; border: none; color: #9ca3af;
-                    font-size: 12px; cursor: pointer; opacity: 0; transition: all 0.2s;
-                    display: flex; align-items: center; gap: 4px;
+                    position: absolute; bottom: -24px; left: 10px; background: transparent; border: none;
+                    color: #9ca3af; font-size: 12px; cursor: pointer; opacity: 0; transition: 0.2s;
                 }
                 .message-row.ai:hover .copy-btn { opacity: 1; }
                 .copy-btn:hover { color: var(--primary); }
 
-                /* کادر ورودی شناور */
-                .input-wrapper {
-                    padding: 10px 20px 20px 20px;
-                    background: linear-gradient(to top, var(--chat-bg) 70%, transparent);
-                }
-
+                .input-wrapper { padding: 10px 20px 20px 20px; background: linear-gradient(to top, var(--chat-bg) 70%, transparent); }
                 .tg-input-area { 
-                    display: flex; 
-                    padding: 6px 10px; 
-                    background-color: #ffffff; 
-                    align-items: flex-end; 
-                    border-radius: 24px;
-                    box-shadow: 0 5px 20px rgba(0,0,0,0.06);
-                    border: 1px solid var(--border-color);
-                    transition: border-color 0.3s, box-shadow 0.3s;
+                    display: flex; padding: 6px 10px; background-color: #ffffff; align-items: flex-end;
+                    border-radius: 24px; box-shadow: 0 5px 20px rgba(0,0,0,0.06); border: 1px solid var(--border-color);
                 }
-                .tg-input-area:focus-within {
-                    border-color: #a5b4fc;
-                    box-shadow: 0 5px 25px rgba(79, 70, 229, 0.1);
-                }
-                
+                .tg-input-area:focus-within { border-color: #a5b4fc; }
                 .tg-input-area textarea { 
-                    flex: 1; 
-                    padding: 12px 16px; 
-                    border: none; 
-                    background-color: transparent;
-                    border-radius: 18px; 
-                    outline: none; 
-                    font-family: inherit; 
-                    font-size: 15px;
-                    resize: none; 
-                    max-height: 150px; 
-                    line-height: 1.5; 
-                    overflow-y: auto; 
-                    color: var(--text-main);
+                    flex: 1; padding: 12px 16px; border: none; background-color: transparent;
+                    border-radius: 18px; outline: none; font-family: inherit; font-size: 15px;
+                    resize: none; max-height: 150px; line-height: 1.5; overflow-y: auto; color: var(--text-main);
                 }
-                .tg-input-area textarea::placeholder { color: #9ca3af; }
-                
                 .tg-send-btn { 
-                    width: 44px; height: 44px; margin: 2px; 
-                    background: linear-gradient(135deg, #6366f1, #4f46e5); 
-                    color: white; 
-                    border: none; border-radius: 50%; cursor: pointer; 
-                    display: flex; align-items: center; justify-content: center; 
-                    transition: transform 0.2s, box-shadow 0.2s;
-                    box-shadow: 0 4px 10px rgba(79, 70, 229, 0.3);
-                    flex-shrink: 0;
+                    width: 44px; height: 44px; margin: 2px; background: linear-gradient(135deg, #6366f1, #4f46e5);
+                    color: white; border: none; border-radius: 50%; cursor: pointer;
+                    display: flex; align-items: center; justify-content: center; transition: 0.2s;
                 }
-                .tg-send-btn:hover { transform: scale(1.05); box-shadow: 0 6px 15px rgba(79, 70, 229, 0.4); }
-                .tg-send-btn:disabled { background: #e5e7eb; color: #9ca3af; box-shadow: none; cursor: not-allowed; transform: none; }
+                .tg-send-btn:disabled { background: #e5e7eb; color: #9ca3af; cursor: not-allowed; }
 
-                /* انیمیشن تایپ */
-                .typing-indicator { display: flex; gap: 5px; padding: 16px 20px; background: var(--ai-bubble); border: 1px solid var(--border-color); border-radius: 18px; border-top-left-radius: 4px; width: fit-content; box-shadow: 0 4px 15px rgba(0,0,0,0.03); }
+                .typing-indicator { display: flex; gap: 5px; padding: 16px 20px; background: var(--ai-bubble); border: 1px solid var(--border-color); border-radius: 18px; border-top-left-radius: 4px; width: fit-content; }
                 .typing-indicator span { width: 6px; height: 6px; background-color: #a5b4fc; border-radius: 50%; animation: bounce 1.4s infinite ease-in-out both; }
                 .typing-indicator span:nth-child(1) { animation-delay: -0.32s; }
                 .typing-indicator span:nth-child(2) { animation-delay: -0.16s; }
-                
+
                 @keyframes bounce { 0%, 80%, 100% { transform: scale(0); } 40% { transform: scale(1); } }
                 @keyframes slideUp { from { opacity: 0; transform: translateY(15px); } to { opacity: 1; transform: translateY(0); } }
 
-                /* موبایل */
                 @media (max-width: 768px) {
-                    .sidebar {
-                        position: fixed;
-                        right: 0; top: 0;
-                        transform: translateX(100%); 
-                        box-shadow: -5px 0 25px rgba(0,0,0,0.1);
-                    }
+                    .sidebar { position: fixed; right: 0; top: 0; transform: translateX(100%); transition: transform 0.3s ease; box-shadow: -5px 0 25px rgba(0,0,0,0.1); }
                     .sidebar.open { transform: translateX(0); }
                     .menu-btn { display: block; }
                     .message-content { max-width: 88%; }
@@ -401,60 +292,204 @@ def read_root():
         </head>
         <body>
             
-            <div class="sidebar" id="sidebar">
-                <div class="sidebar-header">
-                    <span>🍃</span> مرهم
-                </div>
-                <button class="new-chat-btn-sidebar" onclick="createNewChat()">
-                    <span>+</span> گفتگوی جدید
-                </button>
-                <div class="chat-list" id="chat-list"></div>
-            </div>
+            <!-- 👤 صفحه انتخاب پروفایل -->
+            <div class="profile-screen" id="profile-screen">
+                <div class="profile-card">
+                    <div class="profile-logo">🍃</div>
+                    <h1 class="profile-title">به مرهم خوش آمدید</h1>
+                    <p class="profile-subtitle">برای شروع، نام خود را وارد کنید تا پروفایل شما ساخته شود.</p>
+                    
+                    <div class="input-group">
+                        <input type="text" id="profile-name-input" placeholder="نام شما (مثلاً: علی)" autocomplete="off">
+                        <button class="btn-primary" onclick="createProfile()">ورود به مرهم</button>
+                    </div>
 
-            <div class="main-chat">
-                <div class="tg-header">
-                    <button class="menu-btn" onclick="toggleSidebar()">☰</button>
-                    <div class="header-profile">
-                        <div class="header-avatar">🍃</div>
-                        <div class="header-info">
-                            <h2>مرهم</h2>
-                            <p>همراه و مشاور شما در روابط</p>
-                        </div>
+                    <div class="profile-list" id="profile-list" style="display: none;">
+                        <p style="font-size: 13px; color: var(--text-muted); margin: 0 0 10px 0;">یا از پروفایل‌های قبلی انتخاب کنید:</p>
+                        <!-- لیست پروفایل‌ها با JS پر می‌شود -->
                     </div>
                 </div>
-                
-                <div class="tg-messages" id="chat-box"></div>
-                
-                <div class="input-wrapper">
-                    <div class="tg-input-area">
-                        <textarea id="msg" placeholder="هر چیزی که در ذهنت هست را بنویس..." rows="1"></textarea>
-                        <button class="tg-send-btn" id="send-btn" onclick="send()" title="ارسال">
-                            <svg viewBox="0 0 24 24" width="20" height="20" fill="currentColor">
-                                <path d="M2.01 21L23 12 2.01 3 2 10l15 2-15 2z"></path>
-                            </svg>
-                        </button>
+            </div>
+
+            <!-- 🗂️ اپلیکیشن اصلی -->
+            <div class="main-app" id="main-app" style="display: none;">
+                <div class="sidebar" id="sidebar">
+                    <div class="sidebar-header"><span>🍃</span> مرهم</div>
+                    
+                    <div class="user-info-box">
+                        <span class="user-info-name" id="sidebar-username">کاربر</span>
+                        <button class="switch-profile-btn" onclick="logout()">تغییر پروفایل</button>
+                    </div>
+
+                    <button class="new-chat-btn-sidebar" onclick="createNewChat()">
+                        <span>+</span> گفتگوی جدید
+                    </button>
+                    <div class="chat-list" id="chat-list"></div>
+                </div>
+
+                <div class="main-chat">
+                    <div class="tg-header">
+                        <button class="menu-btn" onclick="toggleSidebar()">☰</button>
+                        <div class="header-profile">
+                            <div class="header-avatar">🍃</div>
+                            <div class="header-info">
+                                <h2>مرهم</h2>
+                                <p id="header-greeting">همراه و مشاور شما</p>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="tg-messages" id="chat-box"></div>
+                    
+                    <div class="input-wrapper">
+                        <div class="tg-input-area">
+                            <textarea id="msg" placeholder="هر چیزی که در ذهنت هست را بنویس..." rows="1"></textarea>
+                            <button class="tg-send-btn" id="send-btn" onclick="send()">
+                                <svg viewBox="0 0 24 24" width="20" height="20" fill="currentColor">
+                                    <path d="M2.01 21L23 12 2.01 3 2 10l15 2-15 2z"></path>
+                                </svg>
+                            </button>
+                        </div>
                     </div>
                 </div>
             </div>
             
             <script>
-                const initialGreeting = "سلام! من «مرهم» هستم. اینجا هستم تا در مورد روابط، احساسات و چالش‌هایی که داری با هم صحبت کنیم. امروز چه چیزی ذهن تو را مشغول کرده؟";
+                const initialGreeting = "سلام! من «مرهم» هستم. اینجا هستم تا در مورد روابط، احساسات، استرس‌ها و چالش‌هایی که داری با هم صحبت کنیم. امروز چه چیزی ذهن تو را مشغول کرده؟";
                 const chatBox = document.getElementById('chat-box');
                 const msgInput = document.getElementById('msg');
                 const chatListDiv = document.getElementById('chat-list');
                 const sidebar = document.getElementById('sidebar');
 
+                // متغیرهای مربوط به پروفایل
+                let profiles = [];
+                let currentProfileId = null;
+                let currentProfileName = "";
+                
                 let allChats = [];
                 let currentChatId = null;
 
-                function initApp() {
-                    const savedData = localStorage.getItem('marhamAppData');
+                // ==========================================
+                // 🔐 مدیریت پروفایل‌ها
+                // ==========================================
+                function initProfileSystem() {
+                    const savedProfiles = localStorage.getItem('marhamProfiles');
+                    const activeProfileId = localStorage.getItem('marhamActiveProfile');
+
+                    if (savedProfiles) {
+                        profiles = JSON.parse(savedProfiles);
+                        renderProfileList();
+                    }
+
+                    if (activeProfileId && profiles.find(p => p.id === activeProfileId)) {
+                        // اگر کاربر قبلا لاگین بوده، مستقیم برو به اپ
+                        loginToProfile(activeProfileId);
+                    } else {
+                        // نمایش صفحه انتخاب پروفایل
+                        document.getElementById('profile-screen').style.display = 'flex';
+                        document.getElementById('main-app').style.display = 'none';
+                    }
+                }
+
+                function renderProfileList() {
+                    const listDiv = document.getElementById('profile-list');
+                    if (profiles.length === 0) {
+                        listDiv.style.display = 'none';
+                        return;
+                    }
+                    
+                    listDiv.style.display = 'block';
+                    // پاک کردن لیست قبلی (به جز عنوان)
+                    while(listDiv.children.length > 1) {
+                        listDiv.removeChild(listDiv.lastChild);
+                    }
+
+                    profiles.forEach(p => {
+                        const item = document.createElement('div');
+                        item.className = 'profile-item';
+                        
+                        const avatar = document.createElement('div');
+                        avatar.className = 'profile-avatar-mini';
+                        avatar.innerText = p.name.charAt(0).toUpperCase();
+                        
+                        const name = document.createElement('span');
+                        name.innerText = p.name;
+
+                        item.appendChild(avatar);
+                        item.appendChild(name);
+                        
+                        item.onclick = () => loginToProfile(p.id);
+                        listDiv.appendChild(item);
+                    });
+                }
+
+                function createProfile() {
+                    const nameInput = document.getElementById('profile-name-input');
+                    const name = nameInput.value.trim();
+                    if (!name) {
+                        alert("لطفاً یک نام وارد کنید.");
+                        return;
+                    }
+
+                    const newProfile = {
+                        id: 'usr_' + Date.now(),
+                        name: name,
+                        createdAt: Date.now()
+                    };
+
+                    profiles.push(newProfile);
+                    localStorage.setItem('marhamProfiles', JSON.stringify(profiles));
+                    nameInput.value = '';
+                    
+                    loginToProfile(newProfile.id);
+                }
+
+                function loginToProfile(profileId) {
+                    currentProfileId = profileId;
+                    const profile = profiles.find(p => p.id === profileId);
+                    currentProfileName = profile.name;
+                    
+                    localStorage.setItem('marhamActiveProfile', currentProfileId);
+
+                    // مخفی کردن صفحه لاگین و نمایش اپ
+                    document.getElementById('profile-screen').style.display = 'none';
+                    document.getElementById('main-app').style.display = 'flex';
+
+                    // آپدیت نام‌ها در UI
+                    document.getElementById('sidebar-username').innerText = currentProfileName;
+                    document.getElementById('header-greeting').innerText = `سلام ${currentProfileName} عزیز، خوش آمدی`;
+
+                    // لود کردن چت‌های مخصوص این پروفایل
+                    loadUserChats();
+                }
+
+                function logout() {
+                    localStorage.removeItem('marhamActiveProfile');
+                    currentProfileId = null;
+                    currentProfileName = "";
+                    document.getElementById('main-app').style.display = 'none';
+                    document.getElementById('profile-screen').style.display = 'flex';
+                    renderProfileList();
+                }
+
+                // ==========================================
+                // 💬 مدیریت چت‌ها (مخصوص هر پروفایل)
+                // ==========================================
+                function getStorageKey() {
+                    return `marhamChats_${currentProfileId}`;
+                }
+
+                function loadUserChats() {
+                    const savedData = localStorage.getItem(getStorageKey());
                     if (savedData) {
                         const parsed = JSON.parse(savedData);
                         allChats = parsed.chats || [];
                         currentChatId = parsed.currentChatId;
+                    } else {
+                        allChats = [];
+                        currentChatId = null;
                     }
-                    
+
                     if (allChats.length === 0) {
                         createNewChat();
                     } else {
@@ -466,7 +501,7 @@ def read_root():
                 }
 
                 function saveData() {
-                    localStorage.setItem('marhamAppData', JSON.stringify({
+                    localStorage.setItem(getStorageKey(), JSON.stringify({
                         chats: allChats,
                         currentChatId: currentChatId
                     }));
@@ -506,10 +541,12 @@ def read_root():
 
                 function createNewChat() {
                     const newId = 'chat_' + Date.now();
+                    const greetingWithName = `سلام ${currentProfileName} عزیز! من «مرهم» هستم. امروز چه چیزی ذهن تو را مشغول کرده؟`;
+                    
                     const newChat = {
                         id: newId,
                         title: "گفتگوی جدید",
-                        messages: [{ role: 'assistant', content: initialGreeting }],
+                        messages: [{ role: 'assistant', content: greetingWithName }],
                         timestamp: Date.now()
                     };
                     
@@ -531,7 +568,6 @@ def read_root():
                     if (!chat) return;
 
                     chatBox.innerHTML = '';
-                    
                     chat.messages.forEach(msg => {
                         appendMessageUI(msg.role === 'user' ? 'user' : 'ai', msg.content, false);
                     });
@@ -544,7 +580,6 @@ def read_root():
                 function deleteChat(chatId) {
                     if (confirm("این گفتگو برای همیشه حذف شود؟")) {
                         allChats = allChats.filter(c => c.id !== chatId);
-                        
                         if (currentChatId === chatId) {
                             if (allChats.length > 0) {
                                 currentChatId = allChats[0].id;
@@ -563,6 +598,9 @@ def read_root():
                     sidebar.classList.toggle('open');
                 }
 
+                // ==========================================
+                // 🚀 ارسال پیام و تعامل با API
+                // ==========================================
                 msgInput.addEventListener('input', function() {
                     this.style.height = 'auto';
                     this.style.height = (this.scrollHeight) + 'px';
@@ -590,7 +628,6 @@ def read_root():
                     renderSidebar();
 
                     const apiMessages = currentChat.messages.slice(-12);
-                    
                     const typingId = showTypingIndicator();
                     const sendBtn = document.getElementById('send-btn');
                     sendBtn.disabled = true;
@@ -621,13 +658,10 @@ def read_root():
 
                 function appendMessageUI(role, text, scroll = true) {
                     if (!text || !text.trim()) return; 
-
                     const row = document.createElement('div');
                     row.className = `message-row ${role}`;
-                    
                     const content = document.createElement('div');
                     content.className = 'message-content';
-                    
                     const bubble = document.createElement('div');
                     bubble.className = 'message-bubble';
                     
@@ -649,7 +683,6 @@ def read_root():
                     content.appendChild(bubble);
                     row.appendChild(content);
                     chatBox.appendChild(row);
-                    
                     if (scroll) chatBox.scrollTop = chatBox.scrollHeight; 
                 }
 
@@ -661,7 +694,6 @@ def read_root():
                     
                     const content = document.createElement('div');
                     content.className = 'message-content';
-                    
                     const typing = document.createElement('div');
                     typing.className = 'typing-indicator';
                     typing.innerHTML = '<span></span><span></span><span></span>';
@@ -678,7 +710,7 @@ def read_root():
                     if (el) el.remove();
                 }
 
-                window.onload = initApp;
+                window.onload = initProfileSystem;
             </script>
         </body>
     </html>
