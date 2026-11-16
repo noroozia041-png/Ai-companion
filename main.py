@@ -110,9 +110,6 @@ def read_root():
                 ::-webkit-scrollbar { width: 6px; }
                 ::-webkit-scrollbar-thumb { background: #cbd5e1; border-radius: 10px; }
 
-                /* ========================================== */
-                /* 👤 صفحه انتخاب و ساخت پروفایل */
-                /* ========================================== */
                 .profile-screen {
                     position: fixed; top: 0; left: 0; width: 100%; height: 100%;
                     background: linear-gradient(135deg, #f0f2f5 0%, #e0e7ff 100%);
@@ -131,14 +128,12 @@ def read_root():
                 .input-group { display: flex; flex-direction: column; gap: 15px; }
                 .input-group input {
                     padding: 15px; border: 2px solid var(--border-color); border-radius: 12px;
-                    font-family: inherit; font-size: 15px; outline: none; transition: border 0.3s;
-                    text-align: center;
+                    font-family: inherit; font-size: 15px; outline: none; transition: border 0.3s; text-align: center;
                 }
                 .input-group input:focus { border-color: var(--primary); }
                 .btn-primary {
                     padding: 15px; background: var(--primary); color: white; border: none;
-                    border-radius: 12px; font-family: inherit; font-size: 16px; font-weight: 700;
-                    cursor: pointer; transition: background 0.2s;
+                    border-radius: 12px; font-family: inherit; font-size: 16px; font-weight: 700; cursor: pointer;
                 }
                 .btn-primary:hover { background: var(--primary-hover); }
 
@@ -148,55 +143,36 @@ def read_root():
                 }
                 .profile-item {
                     display: flex; align-items: center; gap: 12px; padding: 12px;
-                    border-radius: 12px; background: #f9fafb; cursor: pointer;
-                    border: 1px solid var(--border-color); transition: all 0.2s;
+                    border-radius: 12px; background: #f9fafb; cursor: pointer; border: 1px solid var(--border-color);
                 }
                 .profile-item:hover { background: #f3f4f6; border-color: #d1d5db; transform: translateY(-2px); }
                 .profile-avatar-mini {
-                    width: 35px; height: 35px; border-radius: 50%;
-                    background: linear-gradient(135deg, #818cf8, #4f46e5); color: white;
-                    display: flex; align-items: center; justify-content: center; font-weight: bold;
+                    width: 35px; height: 35px; border-radius: 50%; background: linear-gradient(135deg, #818cf8, #4f46e5);
+                    color: white; display: flex; align-items: center; justify-content: center; font-weight: bold;
                 }
 
-                /* ========================================== */
-                /* 🗂️ سایدبار و چت اصلی */
-                /* ========================================== */
                 .main-app { display: flex; width: 100%; height: 100dvh; }
-                
                 .sidebar {
                     width: 280px; background-color: var(--sidebar-bg); border-left: 1px solid var(--border-color);
                     display: flex; flex-direction: column; height: 100dvh; z-index: 100;
                 }
-                
-                .sidebar-header {
-                    padding: 20px; font-weight: 700; font-size: 18px; color: var(--primary);
-                    display: flex; align-items: center; gap: 8px;
-                }
-
+                .sidebar-header { padding: 20px; font-weight: 700; font-size: 18px; color: var(--primary); display: flex; gap: 8px; }
                 .user-info-box {
-                    margin: 0 15px 15px 15px; padding: 12px;
-                    background: #f3f4f6; border-radius: 12px;
+                    margin: 0 15px 15px 15px; padding: 12px; background: #f3f4f6; border-radius: 12px;
                     display: flex; align-items: center; justify-content: space-between;
                 }
-                .user-info-name { font-size: 14px; font-weight: 700; color: var(--text-main); }
-                .switch-profile-btn {
-                    background: transparent; border: none; color: var(--primary);
-                    font-size: 12px; cursor: pointer; font-family: inherit;
-                }
+                .user-info-name { font-size: 14px; font-weight: 700; }
+                .switch-profile-btn { background: transparent; border: none; color: var(--primary); font-size: 12px; cursor: pointer; }
                 .switch-profile-btn:hover { text-decoration: underline; }
-
                 .new-chat-btn-sidebar {
-                    margin: 0 15px 15px 15px; padding: 12px; background-color: var(--primary);
-                    border: none; border-radius: 12px; font-family: inherit; font-size: 14px;
-                    font-weight: 500; color: #ffffff; cursor: pointer; display: flex;
-                    align-items: center; justify-content: center; gap: 8px; transition: background 0.2s;
+                    margin: 0 15px 15px 15px; padding: 12px; background-color: var(--primary); border: none;
+                    border-radius: 12px; font-family: inherit; font-size: 14px; color: #ffffff; cursor: pointer;
+                    display: flex; align-items: center; justify-content: center; gap: 8px;
                 }
-                .new-chat-btn-sidebar:hover { background-color: var(--primary-hover); }
-
                 .chat-list { flex: 1; overflow-y: auto; padding: 0 10px; }
                 .chat-item {
-                    padding: 12px; margin-bottom: 4px; border-radius: 10px; cursor: pointer;
-                    font-size: 14px; display: flex; justify-content: space-between; align-items: center;
+                    padding: 12px; margin-bottom: 4px; border-radius: 10px; cursor: pointer; font-size: 14px;
+                    display: flex; justify-content: space-between; align-items: center;
                 }
                 .chat-item:hover { background-color: #f3f4f6; }
                 .chat-item.active { background-color: #f3f4f6; font-weight: 700; color: var(--primary); }
@@ -208,76 +184,34 @@ def read_root():
                     background-image: radial-gradient(#e5e7eb 1px, transparent 1px); background-size: 20px 20px;
                     height: 100dvh;
                 }
-                
-                .tg-header { 
-                    background-color: rgba(255, 255, 255, 0.85); backdrop-filter: blur(10px);
-                    padding: 12px 20px; display: flex; align-items: center; 
-                    border-bottom: 1px solid var(--border-color); z-index: 10;
-                }
-                .menu-btn { display: none; background: transparent; border: none; font-size: 24px; color: var(--text-muted); cursor: pointer; margin-left: 15px; }
+                .tg-header { background-color: rgba(255, 255, 255, 0.85); backdrop-filter: blur(10px); padding: 12px 20px; display: flex; align-items: center; border-bottom: 1px solid var(--border-color); }
+                .menu-btn { display: none; background: transparent; border: none; font-size: 24px; cursor: pointer; margin-left: 15px; }
                 .header-profile { display: flex; align-items: center; }
-                .header-avatar { 
-                    width: 46px; height: 46px; border-radius: 50%; background: linear-gradient(135deg, #818cf8, #4f46e5);
-                    color: white; display: flex; align-items: center; justify-content: center; font-size: 24px; margin-left: 15px;
-                }
-                .header-info h2 { margin: 0; font-size: 18px; font-weight: 700; color: var(--primary); }
+                .header-avatar { width: 46px; height: 46px; border-radius: 50%; background: linear-gradient(135deg, #818cf8, #4f46e5); color: white; display: flex; align-items: center; justify-content: center; font-size: 24px; margin-left: 15px; }
+                .header-info h2 { margin: 0; font-size: 18px; color: var(--primary); }
                 .header-info p { margin: 4px 0 0 0; font-size: 13px; color: var(--text-muted); }
 
                 .tg-messages { flex: 1; padding: 25px 20px; overflow-y: auto; display: flex; flex-direction: column; gap: 16px; }
                 .message-row { display: flex; align-items: flex-end; width: 100%; }
                 .message-row.user { justify-content: flex-start; flex-direction: row-reverse; }
-                .message-row.ai { justify-content: flex-start; }
                 .message-content { max-width: 75%; display: flex; flex-direction: column; }
-                
-                .message-bubble { 
-                    padding: 14px 18px; border-radius: 18px; line-height: 1.7; font-size: 15px; 
-                    position: relative; animation: slideUp 0.3s ease-out forwards;
-                }
+                .message-bubble { padding: 14px 18px; border-radius: 18px; line-height: 1.7; font-size: 15px; position: relative; animation: slideUp 0.3s ease-out forwards; }
                 .message-bubble p { margin: 0 0 10px 0; }
                 .message-bubble p:last-child { margin-bottom: 0; }
                 .message-bubble strong { font-weight: 700; color: var(--primary); }
-                .message-bubble ul, .message-bubble ol { margin: 10px 0; padding-right: 24px; }
-
-                .message-row.user .message-bubble { 
-                    background-color: var(--user-bubble); color: #1e1b4b;
-                    border-top-right-radius: 4px; border-bottom-left-radius: 18px; border-bottom-right-radius: 18px;
-                }
-                .message-row.ai .message-bubble { 
-                    background-color: var(--ai-bubble); border: 1px solid var(--border-color);
-                    border-top-left-radius: 4px; border-bottom-left-radius: 18px; border-bottom-right-radius: 18px;
-                    box-shadow: 0 4px 15px rgba(0,0,0,0.03);
-                }
-
-                .copy-btn {
-                    position: absolute; bottom: -24px; left: 10px; background: transparent; border: none;
-                    color: #9ca3af; font-size: 12px; cursor: pointer; opacity: 0; transition: 0.2s;
-                }
+                .message-row.user .message-bubble { background-color: var(--user-bubble); color: #1e1b4b; border-top-right-radius: 4px; border-bottom-left-radius: 18px; border-bottom-right-radius: 18px; }
+                .message-row.ai .message-bubble { background-color: var(--ai-bubble); border: 1px solid var(--border-color); border-top-left-radius: 4px; border-bottom-left-radius: 18px; border-bottom-right-radius: 18px; }
+                .copy-btn { position: absolute; bottom: -24px; left: 10px; background: transparent; border: none; color: #9ca3af; font-size: 12px; cursor: pointer; opacity: 0; }
                 .message-row.ai:hover .copy-btn { opacity: 1; }
-                .copy-btn:hover { color: var(--primary); }
-
+                
                 .input-wrapper { padding: 10px 20px 20px 20px; background: linear-gradient(to top, var(--chat-bg) 70%, transparent); }
-                .tg-input-area { 
-                    display: flex; padding: 6px 10px; background-color: #ffffff; align-items: flex-end;
-                    border-radius: 24px; box-shadow: 0 5px 20px rgba(0,0,0,0.06); border: 1px solid var(--border-color);
-                }
+                .tg-input-area { display: flex; padding: 6px 10px; background-color: #ffffff; align-items: flex-end; border-radius: 24px; box-shadow: 0 5px 20px rgba(0,0,0,0.06); border: 1px solid var(--border-color); }
                 .tg-input-area:focus-within { border-color: #a5b4fc; }
-                .tg-input-area textarea { 
-                    flex: 1; padding: 12px 16px; border: none; background-color: transparent;
-                    border-radius: 18px; outline: none; font-family: inherit; font-size: 15px;
-                    resize: none; max-height: 150px; line-height: 1.5; overflow-y: auto; color: var(--text-main);
-                }
-                .tg-send-btn { 
-                    width: 44px; height: 44px; margin: 2px; background: linear-gradient(135deg, #6366f1, #4f46e5);
-                    color: white; border: none; border-radius: 50%; cursor: pointer;
-                    display: flex; align-items: center; justify-content: center; transition: 0.2s;
-                }
+                .tg-input-area textarea { flex: 1; padding: 12px 16px; border: none; background-color: transparent; border-radius: 18px; outline: none; font-family: inherit; font-size: 15px; resize: none; max-height: 150px; line-height: 1.5; }
+                .tg-send-btn { width: 44px; height: 44px; margin: 2px; background: linear-gradient(135deg, #6366f1, #4f46e5); color: white; border: none; border-radius: 50%; cursor: pointer; display: flex; align-items: center; justify-content: center; }
                 .tg-send-btn:disabled { background: #e5e7eb; color: #9ca3af; cursor: not-allowed; }
-
-                .typing-indicator { display: flex; gap: 5px; padding: 16px 20px; background: var(--ai-bubble); border: 1px solid var(--border-color); border-radius: 18px; border-top-left-radius: 4px; width: fit-content; }
+                .typing-indicator { display: flex; gap: 5px; padding: 16px 20px; background: var(--ai-bubble); border: 1px solid var(--border-color); border-radius: 18px; border-top-left-radius: 4px; }
                 .typing-indicator span { width: 6px; height: 6px; background-color: #a5b4fc; border-radius: 50%; animation: bounce 1.4s infinite ease-in-out both; }
-                .typing-indicator span:nth-child(1) { animation-delay: -0.32s; }
-                .typing-indicator span:nth-child(2) { animation-delay: -0.16s; }
-
                 @keyframes bounce { 0%, 80%, 100% { transform: scale(0); } 40% { transform: scale(1); } }
                 @keyframes slideUp { from { opacity: 0; transform: translateY(15px); } to { opacity: 1; transform: translateY(0); } }
 
@@ -292,38 +226,29 @@ def read_root():
         </head>
         <body>
             
-            <!-- 👤 صفحه انتخاب پروفایل -->
             <div class="profile-screen" id="profile-screen">
                 <div class="profile-card">
                     <div class="profile-logo">🍃</div>
                     <h1 class="profile-title">به مرهم خوش آمدید</h1>
                     <p class="profile-subtitle">برای شروع، نام خود را وارد کنید تا پروفایل شما ساخته شود.</p>
-                    
                     <div class="input-group">
                         <input type="text" id="profile-name-input" placeholder="نام شما (مثلاً: علی)" autocomplete="off">
                         <button class="btn-primary" onclick="createProfile()">ورود به مرهم</button>
                     </div>
-
                     <div class="profile-list" id="profile-list" style="display: none;">
                         <p style="font-size: 13px; color: var(--text-muted); margin: 0 0 10px 0;">یا از پروفایل‌های قبلی انتخاب کنید:</p>
-                        <!-- لیست پروفایل‌ها با JS پر می‌شود -->
                     </div>
                 </div>
             </div>
 
-            <!-- 🗂️ اپلیکیشن اصلی -->
             <div class="main-app" id="main-app" style="display: none;">
                 <div class="sidebar" id="sidebar">
                     <div class="sidebar-header"><span>🍃</span> مرهم</div>
-                    
                     <div class="user-info-box">
                         <span class="user-info-name" id="sidebar-username">کاربر</span>
                         <button class="switch-profile-btn" onclick="logout()">تغییر پروفایل</button>
                     </div>
-
-                    <button class="new-chat-btn-sidebar" onclick="createNewChat()">
-                        <span>+</span> گفتگوی جدید
-                    </button>
+                    <button class="new-chat-btn-sidebar" onclick="createNewChat()"><span>+</span> گفتگوی جدید</button>
                     <div class="chat-list" id="chat-list"></div>
                 </div>
 
@@ -338,16 +263,12 @@ def read_root():
                             </div>
                         </div>
                     </div>
-                    
                     <div class="tg-messages" id="chat-box"></div>
-                    
                     <div class="input-wrapper">
                         <div class="tg-input-area">
                             <textarea id="msg" placeholder="هر چیزی که در ذهنت هست را بنویس..." rows="1"></textarea>
                             <button class="tg-send-btn" id="send-btn" onclick="send()">
-                                <svg viewBox="0 0 24 24" width="20" height="20" fill="currentColor">
-                                    <path d="M2.01 21L23 12 2.01 3 2 10l15 2-15 2z"></path>
-                                </svg>
+                                <svg viewBox="0 0 24 24" width="20" height="20" fill="currentColor"><path d="M2.01 21L23 12 2.01 3 2 10l15 2-15 2z"></path></svg>
                             </button>
                         </div>
                     </div>
@@ -355,24 +276,43 @@ def read_root():
             </div>
             
             <script>
-                const initialGreeting = "سلام! من «مرهم» هستم. اینجا هستم تا در مورد روابط، احساسات، استرس‌ها و چالش‌هایی که داری با هم صحبت کنیم. امروز چه چیزی ذهن تو را مشغول کرده؟";
                 const chatBox = document.getElementById('chat-box');
                 const msgInput = document.getElementById('msg');
                 const chatListDiv = document.getElementById('chat-list');
                 const sidebar = document.getElementById('sidebar');
 
-                // متغیرهای مربوط به پروفایل
                 let profiles = [];
                 let currentProfileId = null;
                 let currentProfileName = "";
-                
                 let allChats = [];
                 let currentChatId = null;
 
                 // ==========================================
-                // 🔐 مدیریت پروفایل‌ها
+                // 🔄 ۱. سیستم مهاجرت داده‌ها (جلوگیری از پاک شدن با آپدیت)
                 // ==========================================
+                function migrateOldData() {
+                    // اگر کاربر از نسخه‌های قبلی دیتا داشته باشد، به ساختار جدید منتقل می‌شود
+                    const oldData = localStorage.getItem('marhamAppData');
+                    if (oldData && !localStorage.getItem('marhamProfiles')) {
+                        console.log("در حال انتقال داده‌های قدیمی...");
+                        try {
+                            const parsed = JSON.parse(oldData);
+                            const defaultProfile = { id: 'usr_default', name: 'کاربر من', createdAt: Date.now() };
+                            localStorage.setItem('marhamProfiles', JSON.stringify([defaultProfile]));
+                            localStorage.setItem('marhamActiveProfile', 'usr_default');
+                            localStorage.setItem('marhamChats_usr_default', JSON.stringify(parsed));
+                            
+                            // پاک کردن کلید قدیمی برای جلوگیری از تداخل
+                            localStorage.removeItem('marhamAppData');
+                        } catch (e) {
+                            console.error("خطا در انتقال داده‌ها:", e);
+                        }
+                    }
+                }
+
                 function initProfileSystem() {
+                    migrateOldData(); // اجرای مهاجرت قبل از لود اپ
+
                     const savedProfiles = localStorage.getItem('marhamProfiles');
                     const activeProfileId = localStorage.getItem('marhamActiveProfile');
 
@@ -382,10 +322,8 @@ def read_root():
                     }
 
                     if (activeProfileId && profiles.find(p => p.id === activeProfileId)) {
-                        // اگر کاربر قبلا لاگین بوده، مستقیم برو به اپ
                         loginToProfile(activeProfileId);
                     } else {
-                        // نمایش صفحه انتخاب پروفایل
                         document.getElementById('profile-screen').style.display = 'flex';
                         document.getElementById('main-app').style.display = 'none';
                     }
@@ -399,7 +337,6 @@ def read_root():
                     }
                     
                     listDiv.style.display = 'block';
-                    // پاک کردن لیست قبلی (به جز عنوان)
                     while(listDiv.children.length > 1) {
                         listDiv.removeChild(listDiv.lastChild);
                     }
@@ -451,15 +388,12 @@ def read_root():
                     
                     localStorage.setItem('marhamActiveProfile', currentProfileId);
 
-                    // مخفی کردن صفحه لاگین و نمایش اپ
                     document.getElementById('profile-screen').style.display = 'none';
                     document.getElementById('main-app').style.display = 'flex';
 
-                    // آپدیت نام‌ها در UI
                     document.getElementById('sidebar-username').innerText = currentProfileName;
                     document.getElementById('header-greeting').innerText = `سلام ${currentProfileName} عزیز، خوش آمدی`;
 
-                    // لود کردن چت‌های مخصوص این پروفایل
                     loadUserChats();
                 }
 
@@ -473,7 +407,7 @@ def read_root():
                 }
 
                 // ==========================================
-                // 💬 مدیریت چت‌ها (مخصوص هر پروفایل)
+                // 💬 ۲. مدیریت چت‌ها (ذخیره‌سازی دائمی در مرورگر)
                 // ==========================================
                 function getStorageKey() {
                     return `marhamChats_${currentProfileId}`;
@@ -500,11 +434,14 @@ def read_root():
                     }
                 }
 
+                // تابع ذخیره‌سازی (فقط زمانی که تغییری ایجاد شود اجرا می‌شود)
                 function saveData() {
-                    localStorage.setItem(getStorageKey(), JSON.stringify({
+                    if (!currentProfileId) return;
+                    const dataToSave = {
                         chats: allChats,
                         currentChatId: currentChatId
-                    }));
+                    };
+                    localStorage.setItem(getStorageKey(), JSON.stringify(dataToSave));
                 }
 
                 function renderSidebar() {
@@ -524,7 +461,7 @@ def read_root():
                         deleteBtn.title = "حذف گفتگو";
                         deleteBtn.onclick = (e) => {
                             e.stopPropagation();
-                            deleteChat(chat.id);
+                            deleteChat(chat.id); // حذف دستی توسط کاربر
                         };
 
                         item.appendChild(titleSpan);
@@ -578,7 +515,7 @@ def read_root():
                 }
 
                 function deleteChat(chatId) {
-                    if (confirm("این گفتگو برای همیشه حذف شود؟")) {
+                    if (confirm("آیا مطمئن هستید که می‌خواهید این گفتگو را برای همیشه حذف کنید؟")) {
                         allChats = allChats.filter(c => c.id !== chatId);
                         if (currentChatId === chatId) {
                             if (allChats.length > 0) {
@@ -599,7 +536,7 @@ def read_root():
                 }
 
                 // ==========================================
-                // 🚀 ارسال پیام و تعامل با API
+                // 🚀 ۳. ارسال پیام
                 // ==========================================
                 msgInput.addEventListener('input', function() {
                     this.style.height = 'auto';
@@ -646,7 +583,7 @@ def read_root():
                         
                         currentChat.messages.push({ role: 'assistant', content: reply });
                         currentChat.timestamp = Date.now();
-                        saveData();
+                        saveData(); // ذخیره پاسخ هوش مصنوعی
 
                     } catch(e) {
                         removeTypingIndicator(typingId);
