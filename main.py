@@ -13,11 +13,11 @@ API_URL = f"https://api.cloudflare.com/client/v4/accounts/{ACCOUNT_ID}/ai/v1/cha
 MODEL_NAME = "@cf/qwen/qwen3.8-27b"
 
 # ==========================================
-# 🎯 بخش تنظیمات پرامپت
+# 🎯 بخش تنظیمات پرامپت (شخصیت و قوانین مرهم)
 # ==========================================
 SYSTEM_PROMPT = (
     "تو یک مشاور متخصص روابط (خانوادگی و عاطفی) با رویکرد شناختی-رفتاری (CBT) و ارتباط بدون خشونت (NVC) هستی. "
-    "لحن تو همدلانه، آرام و بدون قضاوت است. کاربر هدفی دارد و تو باید او را به سمت این هدف هدایت کنی.\n\n"
+    "نام تو «مرهم» است. لحن تو همدلانه، آرام، التیام‌بخش و بدون قضاوت است. کاربر هدفی دارد و تو باید او را به سمت این هدف هدایت کنی.\n\n"
     "قوانین کلیدی:\n"
     "۱. همدلی: احساسات کاربر (مثل نفرت یا بی‌اعتمادی) را کاملاً تایید کن.\n"
     "۲. هدایت: بعد از تایید، کاربر را به سمت هدفش (بهبود رابطه) برگردان.\n"
@@ -74,50 +74,84 @@ def read_root():
         <head>
             <meta charset="utf-8">
             <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
-            <title>مشاور هوش مصنوعی</title>
+            <title>مرهم | همراه و مشاور شما</title>
             <script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
             <style>
-                @import url('https://fonts.googleapis.com/css2?family=Vazirmatn:wght@400;500;700&display=swap');
+                @import url('https://fonts.googleapis.com/css2?family=Vazirmatn:wght@300;400;500;700&display=swap');
                 
-                html, body { height: 100%; margin: 0; padding: 0; overflow: hidden; background-color: #f7f7f8; }
+                /* پالت رنگی آرام‌بخش برای مرهم */
+                :root {
+                    --bg-body: #f0f2f5;
+                    --sidebar-bg: #ffffff;
+                    --chat-bg: #f7f9fc;
+                    --primary: #4f46e5; /* Indigo ملایم */
+                    --primary-hover: #4338ca;
+                    --text-main: #1f2937;
+                    --text-muted: #6b7280;
+                    --user-bubble: #e0e7ff; /* آبی بسیار ملایم */
+                    --ai-bubble: #ffffff;
+                    --border-color: #e5e7eb;
+                }
+                
+                html, body { height: 100%; margin: 0; padding: 0; overflow: hidden; background-color: var(--bg-body); }
                 
                 body { 
                     font-family: 'Vazirmatn', Tahoma, sans-serif; 
                     display: flex; 
+                    color: var(--text-main);
                 }
                 
+                /* اسکرول‌بار ظریف */
+                ::-webkit-scrollbar { width: 6px; }
+                ::-webkit-scrollbar-track { background: transparent; }
+                ::-webkit-scrollbar-thumb { background: #cbd5e1; border-radius: 10px; }
+                ::-webkit-scrollbar-thumb:hover { background: #94a3b8; }
+
                 /* ========================================== */
-                /* 🗂️ نوار کناری (Sidebar) - شبیه ChatGPT */
+                /* 🗂️ سایدبار */
                 /* ========================================== */
                 .sidebar {
-                    width: 260px;
-                    background-color: #f9f9f9;
-                    border-left: 1px solid #e0e0e0;
+                    width: 280px;
+                    background-color: var(--sidebar-bg);
+                    border-left: 1px solid var(--border-color);
                     display: flex;
                     flex-direction: column;
                     height: 100dvh;
-                    transition: transform 0.3s ease;
+                    transition: transform 0.3s cubic-bezier(0.4, 0, 0.2, 1);
                     z-index: 100;
+                    box-shadow: 2px 0 10px rgba(0,0,0,0.02);
                 }
                 
+                .sidebar-header {
+                    padding: 20px 20px 10px 20px;
+                    font-weight: 700;
+                    font-size: 18px;
+                    color: var(--primary);
+                    display: flex;
+                    align-items: center;
+                    gap: 8px;
+                }
+
                 .new-chat-btn-sidebar {
-                    margin: 15px;
+                    margin: 0 15px 15px 15px;
                     padding: 12px;
-                    background-color: #ffffff;
-                    border: 1px solid #d1d5db;
-                    border-radius: 8px;
+                    background-color: var(--primary);
+                    border: none;
+                    border-radius: 12px;
                     font-family: inherit;
                     font-size: 14px;
-                    font-weight: 700;
-                    color: #374151;
+                    font-weight: 500;
+                    color: #ffffff;
                     cursor: pointer;
                     display: flex;
                     align-items: center;
                     justify-content: center;
                     gap: 8px;
-                    transition: background 0.2s;
+                    transition: background 0.2s, transform 0.1s;
+                    box-shadow: 0 4px 12px rgba(79, 70, 229, 0.2);
                 }
-                .new-chat-btn-sidebar:hover { background-color: #f3f4f6; }
+                .new-chat-btn-sidebar:hover { background-color: var(--primary-hover); }
+                .new-chat-btn-sidebar:active { transform: scale(0.98); }
 
                 .chat-list {
                     flex: 1;
@@ -126,78 +160,95 @@ def read_root():
                 }
 
                 .chat-item {
-                    padding: 10px 12px;
-                    margin-bottom: 5px;
-                    border-radius: 8px;
+                    padding: 12px;
+                    margin-bottom: 4px;
+                    border-radius: 10px;
                     cursor: pointer;
-                    font-size: 13.5px;
-                    color: #374151;
+                    font-size: 14px;
+                    color: var(--text-main);
                     white-space: nowrap;
                     overflow: hidden;
                     text-overflow: ellipsis;
                     display: flex;
                     justify-content: space-between;
                     align-items: center;
-                    transition: background 0.2s;
+                    transition: all 0.2s ease;
                 }
-                .chat-item:hover { background-color: #ececec; }
-                .chat-item.active { background-color: #e5e7eb; font-weight: 700; }
+                .chat-item:hover { background-color: #f3f4f6; }
+                .chat-item.active { background-color: #f3f4f6; font-weight: 700; color: var(--primary); }
                 
                 .delete-chat-icon {
                     color: #ef4444;
-                    font-size: 16px;
+                    font-size: 14px;
                     opacity: 0;
                     transition: opacity 0.2s;
-                    cursor: pointer;
+                    padding: 4px;
                 }
                 .chat-item:hover .delete-chat-icon { opacity: 1; }
 
                 /* ========================================== */
-                /* 💬 بخش اصلی چت (تلگرام) */
+                /* 💬 بخش اصلی چت */
                 /* ========================================== */
                 .main-chat {
                     flex: 1;
                     display: flex;
                     flex-direction: column;
-                    background-color: #e6ebee;
-                    background-image: url('https://web.telegram.org/a/chat-bg-pattern-light.ee148af169f9c5c9a46a.png');
-                    background-size: cover;
-                    background-blend-mode: soft-light;
+                    background-color: var(--chat-bg);
+                    background-image: radial-gradient(#e5e7eb 1px, transparent 1px);
+                    background-size: 20px 20px;
                     height: 100dvh;
                     position: relative;
                 }
                 
                 .tg-header { 
-                    background-color: #ffffff;
-                    color: #000000; 
-                    padding: 8px 15px; 
+                    background-color: rgba(255, 255, 255, 0.85);
+                    backdrop-filter: blur(10px);
+                    -webkit-backdrop-filter: blur(10px);
+                    color: var(--text-main); 
+                    padding: 12px 20px; 
                     display: flex; 
                     align-items: center; 
-                    border-bottom: 1px solid #e0e0e0;
+                    border-bottom: 1px solid var(--border-color);
                     flex-shrink: 0; 
                     z-index: 10;
                 }
                 
                 .menu-btn {
-                    display: none; /* در کامپیوتر مخفی است */
+                    display: none; 
                     background: transparent; border: none; font-size: 24px; 
-                    color: #707579; cursor: pointer; margin-left: 15px;
+                    color: var(--text-muted); cursor: pointer; margin-left: 15px;
                 }
 
                 .header-profile { display: flex; align-items: center; }
                 .header-avatar { 
-                    width: 42px; height: 42px; border-radius: 50%; 
-                    background: linear-gradient(135deg, #3390ec, #005bb5); 
+                    width: 46px; height: 46px; border-radius: 50%; 
+                    background: linear-gradient(135deg, #818cf8, #4f46e5); 
                     color: white; display: flex; align-items: center; justify-content: center; 
-                    font-size: 22px; margin-left: 12px;
-                    box-shadow: 0 2px 5px rgba(51, 144, 236, 0.3);
+                    font-size: 24px; margin-left: 15px;
+                    box-shadow: 0 4px 10px rgba(79, 70, 229, 0.3);
+                    position: relative;
                 }
-                .header-info h2 { margin: 0; font-size: 16px; font-weight: 700; }
-                .header-info p { margin: 2px 0 0 0; font-size: 13px; color: #707579; }
+                /* انیمیشن ضربان برای آواتار */
+                .header-avatar::after {
+                    content: '';
+                    position: absolute;
+                    width: 100%; height: 100%;
+                    border-radius: 50%;
+                    border: 2px solid #818cf8;
+                    animation: pulse 2s infinite;
+                    opacity: 0;
+                }
+                @keyframes pulse {
+                    0% { transform: scale(1); opacity: 0.5; }
+                    100% { transform: scale(1.3); opacity: 0; }
+                }
+
+                .header-info h2 { margin: 0; font-size: 18px; font-weight: 700; color: var(--primary); }
+                .header-info p { margin: 4px 0 0 0; font-size: 13px; color: var(--text-muted); }
 
                 .tg-messages { 
-                    flex: 1; padding: 20px; overflow-y: auto; 
-                    display: flex; flex-direction: column; gap: 8px; 
+                    flex: 1; padding: 25px 20px; overflow-y: auto; 
+                    display: flex; flex-direction: column; gap: 16px; 
                 }
                 
                 .message-row { display: flex; align-items: flex-end; width: 100%; }
@@ -207,141 +258,184 @@ def read_root():
                 .message-content { max-width: 75%; display: flex; flex-direction: column; }
                 
                 .message-bubble { 
-                    padding: 10px 14px; border-radius: 12px; line-height: 1.6; 
-                    font-size: 14.5px; word-wrap: break-word; position: relative;
-                    box-shadow: 0 1px 2px rgba(0,0,0,0.08);
-                    animation: slideUp 0.3s ease-out forwards;
+                    padding: 14px 18px; 
+                    border-radius: 18px; 
+                    line-height: 1.7; 
+                    font-size: 15px; 
+                    word-wrap: break-word; 
+                    position: relative;
+                    animation: slideUp 0.3s cubic-bezier(0.16, 1, 0.3, 1) forwards;
                 }
                 
-                .message-bubble p { margin: 0 0 8px 0; }
+                /* استایل‌دهی به مارک‌داون */
+                .message-bubble p { margin: 0 0 10px 0; }
                 .message-bubble p:last-child { margin-bottom: 0; }
-                .message-bubble strong { font-weight: 700; color: #1a1a1a; }
-                .message-bubble ul, .message-bubble ol { margin: 8px 0; padding-right: 20px; }
-                .message-bubble li { margin-bottom: 4px; }
+                .message-bubble strong { font-weight: 700; color: var(--primary); }
+                .message-bubble ul, .message-bubble ol { margin: 10px 0; padding-right: 24px; }
+                .message-bubble li { margin-bottom: 6px; }
 
+                /* حباب کاربر */
                 .message-row.user .message-bubble { 
-                    background-color: #eeffde; border-top-right-radius: 12px; border-bottom-right-radius: 4px; 
+                    background-color: var(--user-bubble); 
+                    color: #1e1b4b;
+                    border-top-right-radius: 4px; 
+                    border-bottom-left-radius: 18px;
+                    border-bottom-right-radius: 18px;
+                    box-shadow: 0 2px 8px rgba(224, 231, 255, 0.5);
                 }
+                /* حباب هوش مصنوعی */
                 .message-row.ai .message-bubble { 
-                    background-color: #ffffff; border-top-left-radius: 12px; border-bottom-left-radius: 4px; 
+                    background-color: var(--ai-bubble); 
+                    border: 1px solid var(--border-color);
+                    border-top-left-radius: 4px; 
+                    border-bottom-left-radius: 18px;
+                    border-bottom-right-radius: 18px;
+                    box-shadow: 0 4px 15px rgba(0,0,0,0.03);
                 }
 
                 .copy-btn {
-                    position: absolute; bottom: -20px; left: 10px;
-                    background: transparent; border: none; color: #a2acb4;
-                    font-size: 11px; cursor: pointer; opacity: 0; transition: opacity 0.2s;
+                    position: absolute; bottom: -24px; left: 10px;
+                    background: transparent; border: none; color: #9ca3af;
+                    font-size: 12px; cursor: pointer; opacity: 0; transition: all 0.2s;
+                    display: flex; align-items: center; gap: 4px;
                 }
                 .message-row.ai:hover .copy-btn { opacity: 1; }
-                .copy-btn:hover { color: #3390ec; }
+                .copy-btn:hover { color: var(--primary); }
+
+                /* کادر ورودی شناور */
+                .input-wrapper {
+                    padding: 10px 20px 20px 20px;
+                    background: linear-gradient(to top, var(--chat-bg) 70%, transparent);
+                }
 
                 .tg-input-area { 
-                    display: flex; padding: 8px 15px; padding-bottom: calc(8px + env(safe-area-inset-bottom)); 
-                    background-color: #ffffff; align-items: flex-end; box-shadow: 0 -1px 5px rgba(0,0,0,0.05);
+                    display: flex; 
+                    padding: 6px 10px; 
+                    background-color: #ffffff; 
+                    align-items: flex-end; 
+                    border-radius: 24px;
+                    box-shadow: 0 5px 20px rgba(0,0,0,0.06);
+                    border: 1px solid var(--border-color);
+                    transition: border-color 0.3s, box-shadow 0.3s;
+                }
+                .tg-input-area:focus-within {
+                    border-color: #a5b4fc;
+                    box-shadow: 0 5px 25px rgba(79, 70, 229, 0.1);
                 }
                 
                 .tg-input-area textarea { 
-                    flex: 1; padding: 12px 16px; border: 2px solid transparent; background-color: #f4f4f5;
-                    border-radius: 18px; outline: none; font-family: inherit; font-size: 14.5px;
-                    resize: none; max-height: 120px; line-height: 1.5; overflow-y: auto; color: #000;
-                    transition: border 0.3s, background 0.3s;
+                    flex: 1; 
+                    padding: 12px 16px; 
+                    border: none; 
+                    background-color: transparent;
+                    border-radius: 18px; 
+                    outline: none; 
+                    font-family: inherit; 
+                    font-size: 15px;
+                    resize: none; 
+                    max-height: 150px; 
+                    line-height: 1.5; 
+                    overflow-y: auto; 
+                    color: var(--text-main);
                 }
-                .tg-input-area textarea:focus { border-color: #3390ec; background-color: #ffffff; }
-                .tg-input-area textarea::placeholder { color: #a2acb4; }
+                .tg-input-area textarea::placeholder { color: #9ca3af; }
                 
                 .tg-send-btn { 
-                    width: 45px; height: 45px; margin-right: 10px; background: transparent; 
-                    color: #3390ec; border: none; border-radius: 50%; cursor: pointer; 
-                    display: flex; align-items: center; justify-content: center; transition: background 0.2s, color 0.2s;
+                    width: 44px; height: 44px; margin: 2px; 
+                    background: linear-gradient(135deg, #6366f1, #4f46e5); 
+                    color: white; 
+                    border: none; border-radius: 50%; cursor: pointer; 
+                    display: flex; align-items: center; justify-content: center; 
+                    transition: transform 0.2s, box-shadow 0.2s;
+                    box-shadow: 0 4px 10px rgba(79, 70, 229, 0.3);
+                    flex-shrink: 0;
                 }
-                .tg-send-btn:hover { background-color: #f4f4f5; color: #005bb5; }
-                .tg-send-btn:disabled { color: #a2acb4; cursor: not-allowed; }
+                .tg-send-btn:hover { transform: scale(1.05); box-shadow: 0 6px 15px rgba(79, 70, 229, 0.4); }
+                .tg-send-btn:disabled { background: #e5e7eb; color: #9ca3af; box-shadow: none; cursor: not-allowed; transform: none; }
 
-                .typing-indicator { display: flex; gap: 4px; padding: 12px 16px; background: white; border-radius: 12px; border-bottom-left-radius: 4px; width: fit-content; box-shadow: 0 1px 2px rgba(0,0,0,0.08); }
-                .typing-indicator span { width: 6px; height: 6px; background-color: #a2acb4; border-radius: 50%; animation: bounce 1.4s infinite ease-in-out both; }
+                /* انیمیشن تایپ */
+                .typing-indicator { display: flex; gap: 5px; padding: 16px 20px; background: var(--ai-bubble); border: 1px solid var(--border-color); border-radius: 18px; border-top-left-radius: 4px; width: fit-content; box-shadow: 0 4px 15px rgba(0,0,0,0.03); }
+                .typing-indicator span { width: 6px; height: 6px; background-color: #a5b4fc; border-radius: 50%; animation: bounce 1.4s infinite ease-in-out both; }
                 .typing-indicator span:nth-child(1) { animation-delay: -0.32s; }
                 .typing-indicator span:nth-child(2) { animation-delay: -0.16s; }
                 
                 @keyframes bounce { 0%, 80%, 100% { transform: scale(0); } 40% { transform: scale(1); } }
-                @keyframes slideUp { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
+                @keyframes slideUp { from { opacity: 0; transform: translateY(15px); } to { opacity: 1; transform: translateY(0); } }
 
-                /* ========================================== */
-                /* 📱 ریسپانسیو برای موبایل */
-                /* ========================================== */
+                /* موبایل */
                 @media (max-width: 768px) {
                     .sidebar {
                         position: fixed;
                         right: 0; top: 0;
-                        transform: translateX(100%); /* مخفی در سمت راست */
-                        box-shadow: -2px 0 10px rgba(0,0,0,0.1);
+                        transform: translateX(100%); 
+                        box-shadow: -5px 0 25px rgba(0,0,0,0.1);
                     }
                     .sidebar.open { transform: translateX(0); }
                     .menu-btn { display: block; }
-                    .message-content { max-width: 85%; }
+                    .message-content { max-width: 88%; }
+                    .input-wrapper { padding: 10px 15px 15px 15px; }
                 }
             </style>
         </head>
         <body>
             
-            <!-- 🗂️ سایدبار چت‌ها -->
             <div class="sidebar" id="sidebar">
-                <button class="new-chat-btn-sidebar" onclick="createNewChat()">
-                    <span>+</span> چت جدید
-                </button>
-                <div class="chat-list" id="chat-list">
-                    <!-- لیست چت‌ها با جاوااسکریپت ساخته می‌شود -->
+                <div class="sidebar-header">
+                    <span>🍃</span> مرهم
                 </div>
+                <button class="new-chat-btn-sidebar" onclick="createNewChat()">
+                    <span>+</span> گفتگوی جدید
+                </button>
+                <div class="chat-list" id="chat-list"></div>
             </div>
 
-            <!-- 💬 بخش اصلی چت -->
             <div class="main-chat">
                 <div class="tg-header">
                     <button class="menu-btn" onclick="toggleSidebar()">☰</button>
                     <div class="header-profile">
-                        <div class="header-avatar">🧠</div>
+                        <div class="header-avatar">🍃</div>
                         <div class="header-info">
-                            <h2>مشاور هوش مصنوعی</h2>
-                            <p>متخصص روابط و احساسات</p>
+                            <h2>مرهم</h2>
+                            <p>همراه و مشاور شما در روابط</p>
                         </div>
                     </div>
                 </div>
                 
                 <div class="tg-messages" id="chat-box"></div>
                 
-                <div class="tg-input-area">
-                    <textarea id="msg" placeholder="پیام..." rows="1"></textarea>
-                    <button class="tg-send-btn" id="send-btn" onclick="send()" title="ارسال">
-                        <svg viewBox="0 0 24 24" width="24" height="24" fill="currentColor">
-                            <path d="M2.01 21L23 12 2.01 3 2 10l15 2-15 2z"></path>
-                        </svg>
-                    </button>
+                <div class="input-wrapper">
+                    <div class="tg-input-area">
+                        <textarea id="msg" placeholder="هر چیزی که در ذهنت هست را بنویس..." rows="1"></textarea>
+                        <button class="tg-send-btn" id="send-btn" onclick="send()" title="ارسال">
+                            <svg viewBox="0 0 24 24" width="20" height="20" fill="currentColor">
+                                <path d="M2.01 21L23 12 2.01 3 2 10l15 2-15 2z"></path>
+                            </svg>
+                        </button>
+                    </div>
                 </div>
             </div>
             
             <script>
-                const initialGreeting = "سلام! من اینجا هستم تا در مورد روابط، احساسات و چالش‌هایی که داری با هم صحبت کنیم. امروز چه چیزی ذهن تو را مشغول کرده؟";
+                const initialGreeting = "سلام! من «مرهم» هستم. اینجا هستم تا در مورد روابط، احساسات و چالش‌هایی که داری با هم صحبت کنیم. امروز چه چیزی ذهن تو را مشغول کرده؟";
                 const chatBox = document.getElementById('chat-box');
                 const msgInput = document.getElementById('msg');
                 const chatListDiv = document.getElementById('chat-list');
                 const sidebar = document.getElementById('sidebar');
 
-                // داده‌های اصلی برنامه
                 let allChats = [];
                 let currentChatId = null;
 
-                // ۱. لود کردن اطلاعات از حافظه مرورگر
                 function initApp() {
-                    const savedData = localStorage.getItem('aiCounselorData');
+                    const savedData = localStorage.getItem('marhamAppData');
                     if (savedData) {
                         const parsed = JSON.parse(savedData);
                         allChats = parsed.chats || [];
                         currentChatId = parsed.currentChatId;
                     }
                     
-                    // اگر هیچ چتی وجود نداشت، یکی بساز
                     if (allChats.length === 0) {
                         createNewChat();
                     } else {
-                        // اگر چت فعلی پیدا نشد، اولین چت را باز کن
                         if (!currentChatId || !allChats.find(c => c.id === currentChatId)) {
                             currentChatId = allChats[0].id;
                         }
@@ -349,18 +443,15 @@ def read_root():
                     }
                 }
 
-                // ۲. ذخیره کل داده‌ها در حافظه
                 function saveData() {
-                    localStorage.setItem('aiCounselorData', JSON.stringify({
+                    localStorage.setItem('marhamAppData', JSON.stringify({
                         chats: allChats,
                         currentChatId: currentChatId
                     }));
                 }
 
-                // ۳. رندر کردن لیست چت‌ها در سایدبار
                 function renderSidebar() {
                     chatListDiv.innerHTML = '';
-                    // مرتب‌سازی چت‌ها از جدیدترین به قدیمی‌ترین
                     allChats.sort((a, b) => b.timestamp - a.timestamp);
                     
                     allChats.forEach(chat => {
@@ -373,9 +464,9 @@ def read_root():
                         const deleteBtn = document.createElement('span');
                         deleteBtn.className = 'delete-chat-icon';
                         deleteBtn.innerText = '✕';
-                        deleteBtn.title = "حذف چت";
+                        deleteBtn.title = "حذف گفتگو";
                         deleteBtn.onclick = (e) => {
-                            e.stopPropagation(); // جلوگیری از باز شدن چت
+                            e.stopPropagation();
                             deleteChat(chat.id);
                         };
 
@@ -384,14 +475,13 @@ def read_root():
                         
                         item.onclick = () => {
                             loadChat(chat.id);
-                            if (window.innerWidth <= 768) toggleSidebar(); // بستن منو در موبایل
+                            if (window.innerWidth <= 768) toggleSidebar();
                         };
                         
                         chatListDiv.appendChild(item);
                     });
                 }
 
-                // ۴. ایجاد چت جدید
                 function createNewChat() {
                     const newId = 'chat_' + Date.now();
                     const newChat = {
@@ -401,7 +491,7 @@ def read_root():
                         timestamp: Date.now()
                     };
                     
-                    allChats.unshift(newChat); // اضافه به اول لیست
+                    allChats.unshift(newChat);
                     currentChatId = newId;
                     
                     saveData();
@@ -413,13 +503,12 @@ def read_root():
                     }
                 }
 
-                // ۵. لود کردن یک چت خاص
                 function loadChat(chatId) {
                     currentChatId = chatId;
                     const chat = allChats.find(c => c.id === chatId);
                     if (!chat) return;
 
-                    chatBox.innerHTML = ''; // پاک کردن صفحه
+                    chatBox.innerHTML = '';
                     
                     chat.messages.forEach(msg => {
                         appendMessageUI(msg.role === 'user' ? 'user' : 'ai', msg.content, false);
@@ -430,18 +519,16 @@ def read_root():
                     saveData();
                 }
 
-                // ۶. حذف چت
                 function deleteChat(chatId) {
-                    if (confirm("این گفتگو حذف شود؟")) {
+                    if (confirm("این گفتگو برای همیشه حذف شود؟")) {
                         allChats = allChats.filter(c => c.id !== chatId);
                         
-                        // اگر چتی که حذف شد، چت فعلی بود
                         if (currentChatId === chatId) {
                             if (allChats.length > 0) {
                                 currentChatId = allChats[0].id;
                                 loadChat(currentChatId);
                             } else {
-                                createNewChat(); // اگر همه چت‌ها حذف شدند، یکی جدید بساز
+                                createNewChat();
                             }
                         } else {
                             saveData();
@@ -450,19 +537,16 @@ def read_root():
                     }
                 }
 
-                // ۷. باز و بسته کردن منو در موبایل
                 function toggleSidebar() {
                     sidebar.classList.toggle('open');
                 }
 
-                // ۸. تنظیم ارتفاع کادر تایپ
                 msgInput.addEventListener('input', function() {
                     this.style.height = 'auto';
                     this.style.height = (this.scrollHeight) + 'px';
                     if(this.value === '') this.style.height = 'auto';
                 });
 
-                // ۹. ارسال پیام
                 async function send() {
                     const msg = msgInput.value.trim();
                     if (!msg || !currentChatId) return;
@@ -472,13 +556,9 @@ def read_root():
                     
                     let currentChat = allChats.find(c => c.id === currentChatId);
                     
-                    // آپدیت UI
                     appendMessageUI('user', msg);
-                    
-                    // آپدیت دیتا
                     currentChat.messages.push({ role: 'user', content: msg });
                     
-                    // اگر این اولین پیام کاربر بود، عنوان چت را تغییر بده
                     if (currentChat.messages.length === 2 && currentChat.title === "گفتگوی جدید") {
                         currentChat.title = msg.substring(0, 25) + (msg.length > 25 ? '...' : '');
                     }
@@ -487,7 +567,6 @@ def read_root():
                     saveData();
                     renderSidebar();
 
-                    // ارسال به API (فقط ۱۲ پیام آخر برای ذخیره توکن)
                     const apiMessages = currentChat.messages.slice(-12);
                     
                     const typingId = showTypingIndicator();
@@ -506,7 +585,6 @@ def read_root():
                         removeTypingIndicator(typingId);
                         appendMessageUI('ai', reply);
                         
-                        // آپدیت دیتا با پاسخ هوش مصنوعی
                         currentChat.messages.push({ role: 'assistant', content: reply });
                         currentChat.timestamp = Date.now();
                         saveData();
@@ -519,7 +597,6 @@ def read_root():
                     }
                 }
 
-                // ۱۰. ساخت المان پیام در صفحه
                 function appendMessageUI(role, text, scroll = true) {
                     if (!text || !text.trim()) return; 
 
@@ -536,11 +613,11 @@ def read_root():
                         bubble.innerHTML = marked.parse(text);
                         const copyBtn = document.createElement('button');
                         copyBtn.className = 'copy-btn';
-                        copyBtn.innerText = 'کپی 📋';
+                        copyBtn.innerHTML = '📋 کپی متن';
                         copyBtn.onclick = () => {
                             navigator.clipboard.writeText(text);
-                            copyBtn.innerText = 'کپی شد! ✓';
-                            setTimeout(() => copyBtn.innerText = 'کپی 📋', 2000);
+                            copyBtn.innerHTML = '✓ کپی شد';
+                            setTimeout(() => copyBtn.innerHTML = '📋 کپی متن', 2000);
                         };
                         bubble.appendChild(copyBtn);
                     } else {
@@ -579,7 +656,6 @@ def read_root():
                     if (el) el.remove();
                 }
 
-                // شروع برنامه
                 window.onload = initApp;
             </script>
         </body>
