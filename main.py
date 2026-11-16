@@ -12,6 +12,22 @@ API_URL = f"https://api.cloudflare.com/client/v4/accounts/{ACCOUNT_ID}/ai/v1/cha
 
 MODEL_NAME = "@cf/qwen/qwen3.8-27b"
 
+# ==========================================
+# 🎯 بخش تنظیمات پرامپت (شخصیت و قوانین ربات)
+# هر تغییری که در رفتار ربات می‌خواهید، فقط همین متن زیر را تغییر دهید.
+# ==========================================
+SYSTEM_PROMPT = (
+    "تو یک مشاور متخصص روابط (خانوادگی و عاطفی) با رویکرد شناختی-رفتاری (CBT) و ارتباط بدون خشونت (NVC) هستی. "
+    "لحن تو همدلانه، آرام و بدون قضاوت است. کاربر هدفی دارد و تو باید او را به سمت این هدف هدایت کنی.\n\n"
+    "قوانین کلیدی:\n"
+    "۱. همدلی: احساسات کاربر (مثل نفرت یا بی‌اعتمادی) را کاملاً تایید کن.\n"
+    "۲. هدایت: بعد از تایید، کاربر را به سمت هدفش (بهبود رابطه) برگردان.\n"
+    "۳. ابزار عملی: تکنیک‌های ارتباطی (مثل جملات «من») را به او یاد بده.\n"
+    "۴. طول پاسخ: پاسخ‌ها باید بسیار روان و کوتاه باشند (حداکثر ۱۵۰ کلمه). از نوشتن متن‌های طولانی خودداری کن.\n"
+    "۵. سوال نهایی: هرگز پاسخ را نیمه‌کاره رها نکن. در انتهای هر پیام، حتماً یک سوال کوتاه بپرس."
+)
+# ==========================================
+
 class ChatRequest(BaseModel):
     messages: list
 
@@ -25,29 +41,20 @@ async def chat(request: ChatRequest):
         "Content-Type": "application/json"
     }
     
-    system_prompt = {
+    # استفاده از پرامپت تعریف شده در بالای فایل
+    system_message = {
         "role": "system", 
-        "content": (
-            "تو یک مشاور متخصص روابط (خانوادگی و عاطفی) با رویکرد شناختی-رفتاری (CBT) و ارتباط بدون خشونت (NVC) هستی. "
-            "لحن تو همدلانه، آرام و بدون قضاوت است. کاربر هدفی دارد و تو باید او را به سمت این هدف هدایت کنی.\n\n"
-            "قوانین کلیدی:\n"
-            "۱. همدلی: احساسات کاربر (مثل نفرت یا بی‌اعتمادی) را کاملاً تایید کن.\n"
-            "۲. هدایت: بعد از تایید، کاربر را به سمت هدفش (بهبود رابطه) برگردان.\n"
-            "۳. ابزار عملی: تکنیک‌های ارتباطی (مثل جملات «من») را به او یاد بده.\n"
-            "۴. طول پاسخ: **پاسخ‌ها باید بسیار روان و کوتاه باشند (حداکثر ۱۵۰ کلمه).** از نوشتن متن‌های طولانی و خسته‌کننده خودداری کن.\n"
-            "۵. سوال نهایی: **هرگز پاسخ را نیمه‌کاره رها نکن.** در انتهای هر پیام، حتماً یک سوال کوتاه بپرس."
-        )
+        "content": SYSTEM_PROMPT
     }
     
     payload = {
         "model": MODEL_NAME,
-        "messages": [system_prompt] + request.messages,
+        "messages": [system_message] + request.messages,
         "max_tokens": 800,
         "temperature": 0.75 
     }
     
     try:
-        # تایم‌اوت به ۶۰ ثانیه افزایش یافت تا خطای Read Timeout رخ ندهد
         response = requests.post(API_URL, headers=headers, json=payload, timeout=60)
         response.raise_for_status() 
         data = response.json()
@@ -56,7 +63,7 @@ async def chat(request: ChatRequest):
             reply_text = data["choices"][0]["message"]["content"]
             
             if not reply_text or len(reply_text.strip()) < 10:
-                reply_text = "من کاملاً درکت می‌کنم که این موضوع چقدر می‌تونه سنگین باشه. حالا که تصمیم گرفتی رابطه رو بهتر کنی، دوست داری از کجا شروع کنیم؟"
+                reply_text = "من کاملاً درکت می‌کنم. دوست داری بیشتر در این مورد صحبت کنیم؟"
                 
             return {"reply": reply_text}
         else:
@@ -85,15 +92,18 @@ def read_root():
                     background-color: #e5ddd5; 
                     display: flex; 
                     justify-content: center; 
+                    align-items: center; /* برای وسط چین کردن در دسکتاپ */
                 }
                 
+                /* ظاهر پیش‌فرض (موبایل) */
                 .chat-container { 
                     width: 100%; 
-                    max-width: 600px; 
+                    max-width: 100%; 
                     background: #efeae2; 
                     display: flex; 
                     flex-direction: column; 
-                    height: 100dvh; 
+                    height: 100dvh; /* پر کردن کل صفحه در موبایل */
+                    overflow: hidden;
                 }
                 
                 .chat-header { 
@@ -102,7 +112,7 @@ def read_root():
                     padding: 10px 15px; 
                     display: flex; 
                     align-items: center; 
-                    justify-content: space-between; /* فاصله دادن بین پروفایل و دکمه چت جدید */
+                    justify-content: space-between;
                     box-shadow: 0 2px 5px rgba(0,0,0,0.2);
                     flex-shrink: 0; 
                     z-index: 10;
@@ -113,7 +123,6 @@ def read_root():
                 .header-info p { margin: 0; font-size: 12px; color: #b0c4de; }
                 .online-dot { height: 10px; width: 10px; background-color: #25d366; border-radius: 50%; display: inline-block; margin-left: 5px; }
 
-                /* دکمه چت جدید */
                 .new-chat-btn {
                     background: rgba(255, 255, 255, 0.2);
                     border: none;
@@ -174,10 +183,9 @@ def read_root():
                     background: #f0f0f0; 
                     border-top: 1px solid #ddd; 
                     flex-shrink: 0;
-                    align-items: flex-end; /* برای تراز کردن دکمه با پایین تکست‌اریا */
+                    align-items: flex-end; 
                 }
                 
-                /* تغییر کادر متن به textarea */
                 .chat-input-area textarea { 
                     flex: 1; 
                     padding: 12px 15px; 
@@ -187,8 +195,8 @@ def read_root():
                     font-family: inherit; 
                     font-size: 14px;
                     box-shadow: 0 1px 3px rgba(0,0,0,0.1);
-                    resize: none; /* غیرفعال کردن تغییر اندازه دستی */
-                    max-height: 100px; /* حداکثر ارتفاع قبل از اسکرول */
+                    resize: none; 
+                    max-height: 100px; 
                     line-height: 1.5;
                     overflow-y: auto;
                 }
@@ -216,6 +224,34 @@ def read_root():
                 .typing-indicator span:nth-child(1) { animation-delay: -0.32s; }
                 .typing-indicator span:nth-child(2) { animation-delay: -0.16s; }
                 @keyframes bounce { 0%, 80%, 100% { transform: scale(0); } 40% { transform: scale(1); } }
+
+                /* ========================================== */
+                /* 🖥️ تنظیمات مخصوص دسکتاپ (کامپیوتر) */
+                /* ========================================== */
+                @media (min-width: 768px) {
+                    .chat-container { 
+                        max-width: 800px; /* عریض‌تر در کامپیوتر */
+                        height: 90dvh;    /* پنجره شناور در وسط صفحه */
+                        border-radius: 20px; /* گوشه‌های گرد */
+                        box-shadow: 0 10px 30px rgba(0,0,0,0.3); /* سایه زیبا */
+                        border: 1px solid rgba(0,0,0,0.1);
+                    }
+                    
+                    .chat-header { 
+                        border-top-left-radius: 20px; 
+                        border-top-right-radius: 20px; 
+                        padding: 15px 20px;
+                    }
+                    
+                    .chat-input-area { 
+                        border-bottom-left-radius: 20px; 
+                        border-bottom-right-radius: 20px; 
+                        padding: 15px 20px;
+                        padding-bottom: 15px;
+                    }
+                    
+                    .message-bubble { font-size: 15px; } /* فونت کمی بزرگتر در دسکتاپ */
+                }
             </style>
         </head>
         <body>
@@ -247,25 +283,21 @@ def read_root():
                 const chatBox = document.getElementById('chat-box');
                 const msgInput = document.getElementById('msg');
 
-                // ۱. لود کردن تاریخچه از حافظه مرورگر در زمان باز شدن صفحه
                 function loadChat() {
                     const savedChat = localStorage.getItem('aiCounselorChat');
                     if (savedChat) {
                         chatHistory = JSON.parse(savedChat);
                         chatHistory.forEach(msg => appendMessageUI(msg.role === 'user' ? 'user' : 'ai', msg.content));
                     } else {
-                        // اگر چت قبلی نبود، پیام خوش‌آمدگویی اولیه
                         appendMessageUI('ai', initialGreeting);
                     }
                     chatBox.scrollTop = chatBox.scrollHeight;
                 }
 
-                // ۲. ذخیره تاریخچه در حافظه مرورگر
                 function saveChat() {
                     localStorage.setItem('aiCounselorChat', JSON.stringify(chatHistory));
                 }
 
-                // ۳. شروع چت جدید
                 function startNewChat() {
                     if (confirm("آیا مطمئن هستید که می‌خواهید تاریخچه این گفتگو را پاک کنید و چت جدیدی شروع کنید؟")) {
                         chatHistory = [];
@@ -275,7 +307,6 @@ def read_root():
                     }
                 }
 
-                // ۴. تنظیم ارتفاع خودکار کادر متن با تایپ کردن
                 msgInput.addEventListener('input', function() {
                     this.style.height = 'auto';
                     this.style.height = (this.scrollHeight) + 'px';
@@ -285,16 +316,14 @@ def read_root():
                     const msg = msgInput.value.trim();
                     if (!msg) return;
 
-                    // ریست کردن ارتفاع کادر متن
                     msgInput.style.height = 'auto';
 
                     appendMessageUI('user', msg);
                     msgInput.value = '';
                     
                     chatHistory.push({ role: 'user', content: msg });
-                    saveChat(); // ذخیره پیام کاربر
+                    saveChat(); 
 
-                    // مدیریت پنجره لغزان
                     if (chatHistory.length > 12) {
                         chatHistory = chatHistory.slice(chatHistory.length - 12);
                         saveChat();
@@ -318,7 +347,7 @@ def read_root():
                         appendMessageUI('ai', reply);
                         
                         chatHistory.push({ role: 'assistant', content: reply });
-                        saveChat(); // ذخیره پاسخ هوش مصنوعی
+                        saveChat(); 
 
                         if (chatHistory.length > 12) {
                             chatHistory = chatHistory.slice(chatHistory.length - 12);
@@ -397,7 +426,6 @@ def read_root():
                     if (el) el.remove();
                 }
 
-                // در زمان باز شدن صفحه، تابع لود اجرا شود
                 window.onload = loadChat;
             </script>
         </body>
