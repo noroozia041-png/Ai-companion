@@ -78,6 +78,8 @@ def read_root():
             <meta charset="utf-8">
             <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
             <title>مشاور هوش مصنوعی</title>
+            <!-- اضافه کردن کتابخانه Markdown برای نمایش بولد و لیست‌ها -->
+            <script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
             <style>
                 @import url('https://fonts.googleapis.com/css2?family=Vazirmatn:wght@400;500;700&display=swap');
                 
@@ -90,7 +92,12 @@ def read_root():
                     align-items: center; 
                 }
                 
-                /* بدنه اصلی برنامه */
+                /* اسکرول‌بار سفارشی */
+                ::-webkit-scrollbar { width: 8px; }
+                ::-webkit-scrollbar-track { background: transparent; }
+                ::-webkit-scrollbar-thumb { background: #b0b0b0; border-radius: 10px; }
+                ::-webkit-scrollbar-thumb:hover { background: #888; }
+
                 .tg-container { 
                     width: 100%; 
                     height: 100dvh; 
@@ -102,7 +109,6 @@ def read_root():
                     background-blend-mode: soft-light;
                 }
                 
-                /* هدر تلگرام */
                 .tg-header { 
                     background-color: #ffffff;
                     color: #000000; 
@@ -121,18 +127,18 @@ def read_root():
                     background: linear-gradient(135deg, #3390ec, #005bb5); 
                     color: white; display: flex; align-items: center; justify-content: center; 
                     font-size: 22px; margin-left: 12px;
+                    box-shadow: 0 2px 5px rgba(51, 144, 236, 0.3); /* سایه ملایم برای آواتار */
                 }
-                .header-info h2 { margin: 0; font-size: 16px; font-weight: 500; }
+                .header-info h2 { margin: 0; font-size: 16px; font-weight: 700; }
                 .header-info p { margin: 2px 0 0 0; font-size: 13px; color: #707579; }
 
                 .new-chat-btn {
                     background: transparent; border: none; color: #707579;
                     font-size: 20px; cursor: pointer; padding: 8px;
-                    border-radius: 50%; transition: background 0.2s;
+                    border-radius: 50%; transition: background 0.2s, transform 0.2s;
                 }
-                .new-chat-btn:hover { background: #f4f4f5; }
+                .new-chat-btn:hover { background: #f4f4f5; transform: scale(1.1); }
 
-                /* ناحیه پیام‌ها */
                 .tg-messages { 
                     flex: 1; 
                     padding: 20px 20px; 
@@ -150,17 +156,25 @@ def read_root():
                 
                 .message-content { max-width: 75%; display: flex; flex-direction: column; }
                 
-                /* حباب‌های گفتگو */
                 .message-bubble { 
-                    padding: 8px 12px; 
+                    padding: 10px 14px; 
                     border-radius: 12px; 
-                    line-height: 1.5; 
+                    line-height: 1.6; 
                     font-size: 14.5px; 
                     word-wrap: break-word; 
                     position: relative;
-                    box-shadow: 0 1px 1px rgba(0,0,0,0.1);
+                    box-shadow: 0 1px 2px rgba(0,0,0,0.08);
+                    /* انیمیشن ورود پیام */
+                    animation: slideUp 0.3s ease-out forwards;
                 }
                 
+                /* استایل‌دهی به تگ‌های تولید شده توسط Markdown */
+                .message-bubble p { margin: 0 0 8px 0; }
+                .message-bubble p:last-child { margin-bottom: 0; }
+                .message-bubble strong { font-weight: 700; color: #1a1a1a; }
+                .message-bubble ul, .message-bubble ol { margin: 8px 0; padding-right: 20px; }
+                .message-bubble li { margin-bottom: 4px; }
+
                 .message-row.user .message-bubble { 
                     background-color: #eeffde; 
                     border-top-right-radius: 12px;
@@ -173,20 +187,35 @@ def read_root():
                     border-bottom-left-radius: 4px; 
                 }
 
-                /* ناحیه تایپ کردن */
+                /* دکمه کپی */
+                .copy-btn {
+                    position: absolute;
+                    bottom: -20px;
+                    left: 10px;
+                    background: transparent;
+                    border: none;
+                    color: #a2acb4;
+                    font-size: 11px;
+                    cursor: pointer;
+                    opacity: 0;
+                    transition: opacity 0.2s;
+                }
+                .message-row.ai:hover .copy-btn { opacity: 1; }
+                .copy-btn:hover { color: #3390ec; }
+
                 .tg-input-area { 
                     display: flex; 
                     padding: 8px 15px; 
                     padding-bottom: calc(8px + env(safe-area-inset-bottom)); 
                     background-color: #ffffff; 
                     align-items: flex-end; 
-                    box-shadow: 0 -1px 2px rgba(0,0,0,0.05);
+                    box-shadow: 0 -1px 5px rgba(0,0,0,0.05);
                 }
                 
                 .tg-input-area textarea { 
                     flex: 1; 
                     padding: 12px 16px; 
-                    border: none; 
+                    border: 2px solid transparent; /* برای افکت فوکوس */
                     background-color: #f4f4f5;
                     border-radius: 18px; 
                     outline: none; 
@@ -197,65 +226,44 @@ def read_root():
                     line-height: 1.5;
                     overflow-y: auto;
                     color: #000;
+                    transition: border 0.3s, background 0.3s;
+                }
+                .tg-input-area textarea:focus { 
+                    border-color: #3390ec; /* افکت فوکوس */
+                    background-color: #ffffff; 
                 }
                 .tg-input-area textarea::placeholder { color: #a2acb4; }
                 
-                /* دکمه ارسال تلگرام (آیکون کاغذ) */
                 .tg-send-btn { 
-                    width: 45px;
-                    height: 45px;
+                    width: 45px; height: 45px;
                     margin-right: 10px; 
                     background: transparent; 
                     color: #3390ec; 
-                    border: none; 
-                    border-radius: 50%; 
-                    cursor: pointer; 
-                    display: flex;
-                    align-items: center;
-                    justify-content: center;
-                    transition: background 0.2s;
+                    border: none; border-radius: 50%; 
+                    cursor: pointer; display: flex; align-items: center; justify-content: center;
+                    transition: background 0.2s, color 0.2s;
                 }
-                .tg-send-btn:hover { background-color: #f4f4f5; }
+                .tg-send-btn:hover { background-color: #f4f4f5; color: #005bb5; }
                 .tg-send-btn:disabled { color: #a2acb4; cursor: not-allowed; }
 
-                /* انیمیشن تایپ */
-                .typing-indicator { display: flex; gap: 4px; padding: 12px 16px; background: white; border-radius: 12px; border-bottom-left-radius: 4px; width: fit-content; box-shadow: 0 1px 1px rgba(0,0,0,0.1); }
+                .typing-indicator { display: flex; gap: 4px; padding: 12px 16px; background: white; border-radius: 12px; border-bottom-left-radius: 4px; width: fit-content; box-shadow: 0 1px 2px rgba(0,0,0,0.08); }
                 .typing-indicator span { width: 6px; height: 6px; background-color: #a2acb4; border-radius: 50%; animation: bounce 1.4s infinite ease-in-out both; }
                 .typing-indicator span:nth-child(1) { animation-delay: -0.32s; }
                 .typing-indicator span:nth-child(2) { animation-delay: -0.16s; }
+                
                 @keyframes bounce { 0%, 80%, 100% { transform: scale(0); } 40% { transform: scale(1); } }
+                @keyframes slideUp { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
 
-                /* ========================================== */
-                /* 🖥️ تنظیمات دسکتاپ (تمام صفحه مثل تلگرام دسکتاپ) */
-                /* ========================================== */
                 @media (min-width: 768px) {
-                    .tg-container { 
-                        max-width: 100%; /* پوشش تمام عرض صفحه */
-                        height: 100dvh;  /* پوشش تمام ارتفاع صفحه */
-                        border-radius: 0; /* حذف گوشه‌های گرد */
-                        box-shadow: none; /* حذف سایه */
-                        border: none;
-                    }
-                    
-                    /* محدود کردن عرض حباب‌ها در مانیتورهای بزرگ تا خوانایی حفظ شود */
-                    .message-content { 
-                        max-width: 60%; 
-                    }
-                    
-                    /* فاصله دادن هدر و کادر تایپ در مانیتورهای خیلی عریض */
-                    .tg-header { 
-                        padding: 10px 10%; 
-                    }
-                    .tg-input-area { 
-                        padding: 15px 10%; 
-                    }
+                    .tg-container { max-width: 100%; height: 100dvh; border-radius: 0; box-shadow: none; border: none; }
+                    .message-content { max-width: 60%; }
+                    .tg-header { padding: 10px 10%; }
+                    .tg-input-area { padding: 15px 10%; padding-bottom: 15px; }
                 }
             </style>
         </head>
         <body>
             <div class="tg-container">
-                
-                <!-- هدر تلگرام -->
                 <div class="tg-header">
                     <div class="header-profile">
                         <div class="header-avatar">🧠</div>
@@ -267,12 +275,8 @@ def read_root():
                     <button class="new-chat-btn" onclick="startNewChat()" title="پاک کردن تاریخچه">🗑️</button>
                 </div>
                 
-                <!-- محیط چت -->
-                <div class="tg-messages" id="chat-box">
-                    <!-- پیام‌ها با جاوااسکریپت لود می‌شوند -->
-                </div>
+                <div class="tg-messages" id="chat-box"></div>
                 
-                <!-- کادر ارسال پیام -->
                 <div class="tg-input-area">
                     <textarea id="msg" placeholder="پیام..." rows="1"></textarea>
                     <button class="tg-send-btn" id="send-btn" onclick="send()" title="ارسال">
@@ -324,7 +328,6 @@ def read_root():
                     if (!msg) return;
 
                     msgInput.style.height = 'auto';
-
                     appendMessageUI('user', msg);
                     msgInput.value = '';
                     
@@ -380,7 +383,24 @@ def read_root():
                     
                     const bubble = document.createElement('div');
                     bubble.className = 'message-bubble';
-                    bubble.innerText = text;
+                    
+                    // تبدیل مارک‌داون به HTML
+                    if (role === 'ai') {
+                        bubble.innerHTML = marked.parse(text);
+                        
+                        // اضافه کردن دکمه کپی
+                        const copyBtn = document.createElement('button');
+                        copyBtn.className = 'copy-btn';
+                        copyBtn.innerText = 'کپی 📋';
+                        copyBtn.onclick = () => {
+                            navigator.clipboard.writeText(text);
+                            copyBtn.innerText = 'کپی شد! ✓';
+                            setTimeout(() => copyBtn.innerText = 'کپی 📋', 2000);
+                        };
+                        bubble.appendChild(copyBtn);
+                    } else {
+                        bubble.innerText = text;
+                    }
                     
                     content.appendChild(bubble);
                     row.appendChild(content);
