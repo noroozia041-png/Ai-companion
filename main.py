@@ -110,16 +110,17 @@ def read_root():
                 ::-webkit-scrollbar { width: 6px; }
                 ::-webkit-scrollbar-thumb { background: #cbd5e1; border-radius: 10px; }
 
+                /* 👤 صفحه انتخاب و ساخت پروفایل */
                 .profile-screen {
                     position: fixed; top: 0; left: 0; width: 100%; height: 100%;
                     background: linear-gradient(135deg, #f0f2f5 0%, #e0e7ff 100%);
                     display: flex; flex-direction: column; align-items: center; justify-content: center;
-                    z-index: 1000; padding: 20px; box-sizing: border-box;
+                    z-index: 1000; padding: 20px; box-sizing: border-box; overflow-y: auto;
                 }
                 .profile-card {
                     background: white; padding: 30px; border-radius: 24px;
                     box-shadow: 0 10px 30px rgba(0,0,0,0.08); width: 100%; max-width: 400px;
-                    text-align: center;
+                    text-align: center; margin: auto;
                 }
                 .profile-logo { font-size: 50px; margin-bottom: 10px; }
                 .profile-title { color: var(--primary); margin: 0 0 10px 0; font-size: 24px; }
@@ -139,18 +140,27 @@ def read_root():
 
                 .profile-list {
                     margin-top: 25px; border-top: 1px solid var(--border-color); padding-top: 20px;
-                    display: flex; flex-direction: column; gap: 10px; max-height: 200px; overflow-y: auto;
+                    display: flex; flex-direction: column; gap: 10px; max-height: 250px; overflow-y: auto;
                 }
                 .profile-item {
-                    display: flex; align-items: center; gap: 12px; padding: 12px;
+                    display: flex; align-items: center; justify-content: space-between; padding: 12px;
                     border-radius: 12px; background: #f9fafb; cursor: pointer; border: 1px solid var(--border-color);
+                    transition: all 0.2s;
                 }
-                .profile-item:hover { background: #f3f4f6; border-color: #d1d5db; transform: translateY(-2px); }
+                .profile-item:hover { background: #f3f4f6; border-color: #d1d5db; }
+                .profile-info { display: flex; align-items: center; gap: 12px; }
                 .profile-avatar-mini {
                     width: 35px; height: 35px; border-radius: 50%; background: linear-gradient(135deg, #818cf8, #4f46e5);
                     color: white; display: flex; align-items: center; justify-content: center; font-weight: bold;
                 }
+                .delete-profile-btn {
+                    color: #ef4444; font-size: 18px; padding: 5px; opacity: 0.5;
+                    transition: all 0.2s; border-radius: 50%; width: 30px; height: 30px;
+                    display: flex; align-items: center; justify-content: center;
+                }
+                .profile-item:hover .delete-profile-btn { opacity: 1; background: #fee2e2; }
 
+                /* 🗂️ سایدبار و چت */
                 .main-app { display: flex; width: 100%; height: 100dvh; }
                 .sidebar {
                     width: 280px; background-color: var(--sidebar-bg); border-left: 1px solid var(--border-color);
@@ -164,6 +174,7 @@ def read_root():
                 .user-info-name { font-size: 14px; font-weight: 700; }
                 .switch-profile-btn { background: transparent; border: none; color: var(--primary); font-size: 12px; cursor: pointer; }
                 .switch-profile-btn:hover { text-decoration: underline; }
+                
                 .new-chat-btn-sidebar {
                     margin: 0 15px 15px 15px; padding: 12px; background-color: var(--primary); border: none;
                     border-radius: 12px; font-family: inherit; font-size: 14px; color: #ffffff; cursor: pointer;
@@ -287,32 +298,23 @@ def read_root():
                 let allChats = [];
                 let currentChatId = null;
 
-                // ==========================================
-                // 🔄 ۱. سیستم مهاجرت داده‌ها (جلوگیری از پاک شدن با آپدیت)
-                // ==========================================
+                // 🔄 سیستم مهاجرت داده‌ها
                 function migrateOldData() {
-                    // اگر کاربر از نسخه‌های قبلی دیتا داشته باشد، به ساختار جدید منتقل می‌شود
                     const oldData = localStorage.getItem('marhamAppData');
                     if (oldData && !localStorage.getItem('marhamProfiles')) {
-                        console.log("در حال انتقال داده‌های قدیمی...");
                         try {
                             const parsed = JSON.parse(oldData);
                             const defaultProfile = { id: 'usr_default', name: 'کاربر من', createdAt: Date.now() };
                             localStorage.setItem('marhamProfiles', JSON.stringify([defaultProfile]));
                             localStorage.setItem('marhamActiveProfile', 'usr_default');
                             localStorage.setItem('marhamChats_usr_default', JSON.stringify(parsed));
-                            
-                            // پاک کردن کلید قدیمی برای جلوگیری از تداخل
                             localStorage.removeItem('marhamAppData');
-                        } catch (e) {
-                            console.error("خطا در انتقال داده‌ها:", e);
-                        }
+                        } catch (e) {}
                     }
                 }
 
                 function initProfileSystem() {
-                    migrateOldData(); // اجرای مهاجرت قبل از لود اپ
-
+                    migrateOldData();
                     const savedProfiles = localStorage.getItem('marhamProfiles');
                     const activeProfileId = localStorage.getItem('marhamActiveProfile');
 
@@ -329,6 +331,7 @@ def read_root():
                     }
                 }
 
+                // نمایش لیست پروفایل‌ها با دکمه حذف
                 function renderProfileList() {
                     const listDiv = document.getElementById('profile-list');
                     if (profiles.length === 0) {
@@ -345,6 +348,9 @@ def read_root():
                         const item = document.createElement('div');
                         item.className = 'profile-item';
                         
+                        const infoDiv = document.createElement('div');
+                        infoDiv.className = 'profile-info';
+                        
                         const avatar = document.createElement('div');
                         avatar.className = 'profile-avatar-mini';
                         avatar.innerText = p.name.charAt(0).toUpperCase();
@@ -352,10 +358,22 @@ def read_root():
                         const name = document.createElement('span');
                         name.innerText = p.name;
 
-                        item.appendChild(avatar);
-                        item.appendChild(name);
-                        
-                        item.onclick = () => loginToProfile(p.id);
+                        infoDiv.appendChild(avatar);
+                        infoDiv.appendChild(name);
+                        infoDiv.onclick = () => loginToProfile(p.id); // کلیک روی نام برای ورود
+
+                        // دکمه حذف پروفایل
+                        const delBtn = document.createElement('span');
+                        delBtn.className = 'delete-profile-btn';
+                        delBtn.innerHTML = '✕';
+                        delBtn.title = "حذف پروفایل";
+                        delBtn.onclick = (e) => {
+                            e.stopPropagation(); // جلوگیری از ورود به پروفایل
+                            deleteProfile(p.id);
+                        };
+
+                        item.appendChild(infoDiv);
+                        item.appendChild(delBtn);
                         listDiv.appendChild(item);
                     });
                 }
@@ -381,11 +399,33 @@ def read_root():
                     loginToProfile(newProfile.id);
                 }
 
+                // حذف پروفایل و تمام داده‌های مربوط به آن
+                function deleteProfile(profileId) {
+                    if (confirm("آیا مطمئن هستید که می‌خواهید این پروفایل و تمام چت‌های مربوط به آن را برای همیشه حذف کنید؟")) {
+                        // ۱. حذف از لیست آرایه
+                        profiles = profiles.filter(p => p.id !== profileId);
+                        
+                        // ۲. آپدیت حافظه مرورگر برای لیست پروفایل‌ها
+                        localStorage.setItem('marhamProfiles', JSON.stringify(profiles));
+                        
+                        // ۳. حذف تاریخچه چت‌های این پروفایل از حافظه
+                        localStorage.removeItem('marhamChats_' + profileId);
+                        
+                        // ۴. اگر پروفایلِ در حال حاضر لاگین شده بود، خارج شو
+                        if (currentProfileId === profileId) {
+                            logout();
+                        } else {
+                            renderProfileList();
+                        }
+                    }
+                }
+
                 function loginToProfile(profileId) {
                     currentProfileId = profileId;
                     const profile = profiles.find(p => p.id === profileId);
-                    currentProfileName = profile.name;
+                    if(!profile) return;
                     
+                    currentProfileName = profile.name;
                     localStorage.setItem('marhamActiveProfile', currentProfileId);
 
                     document.getElementById('profile-screen').style.display = 'none';
@@ -406,9 +446,7 @@ def read_root():
                     renderProfileList();
                 }
 
-                // ==========================================
-                // 💬 ۲. مدیریت چت‌ها (ذخیره‌سازی دائمی در مرورگر)
-                // ==========================================
+                // 💬 مدیریت چت‌ها
                 function getStorageKey() {
                     return `marhamChats_${currentProfileId}`;
                 }
@@ -434,13 +472,9 @@ def read_root():
                     }
                 }
 
-                // تابع ذخیره‌سازی (فقط زمانی که تغییری ایجاد شود اجرا می‌شود)
                 function saveData() {
                     if (!currentProfileId) return;
-                    const dataToSave = {
-                        chats: allChats,
-                        currentChatId: currentChatId
-                    };
+                    const dataToSave = { chats: allChats, currentChatId: currentChatId };
                     localStorage.setItem(getStorageKey(), JSON.stringify(dataToSave));
                 }
 
@@ -461,7 +495,7 @@ def read_root():
                         deleteBtn.title = "حذف گفتگو";
                         deleteBtn.onclick = (e) => {
                             e.stopPropagation();
-                            deleteChat(chat.id); // حذف دستی توسط کاربر
+                            deleteChat(chat.id);
                         };
 
                         item.appendChild(titleSpan);
@@ -535,9 +569,7 @@ def read_root():
                     sidebar.classList.toggle('open');
                 }
 
-                // ==========================================
-                // 🚀 ۳. ارسال پیام
-                // ==========================================
+                // 🚀 ارسال پیام
                 msgInput.addEventListener('input', function() {
                     this.style.height = 'auto';
                     this.style.height = (this.scrollHeight) + 'px';
@@ -583,7 +615,7 @@ def read_root():
                         
                         currentChat.messages.push({ role: 'assistant', content: reply });
                         currentChat.timestamp = Date.now();
-                        saveData(); // ذخیره پاسخ هوش مصنوعی
+                        saveData();
 
                     } catch(e) {
                         removeTypingIndicator(typingId);
