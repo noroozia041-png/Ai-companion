@@ -35,19 +35,19 @@ SYSTEM_PROMPT = """
 [ساختار پاسخ‌دهی]
 پاسخ‌ها باید همیشه از این الگوی ۳ مرحله‌ای پیروی کنند:
 1. **آینه‌سازی و همدلی:** یک پاراگراف کوتاه برای درک عمیق احساسات.
-2. **بازتعریف یا ارائه ابزار:** یک زاویه دید جدید یا یک تکنیک عملی.
+2. **بازتعریف یا ارائه ابزار:** یک زاویه دید جدید یا یک تکنیک عملی. (اگر از مثال یا نقل‌قول استفاده می‌کنی، حتماً آن را کامل و با علامت گیومه «...» ببند).
 3. **سوال پایانی:** یک سوال کوتاه و هوشمندانه برای ادامه مسیر.
 
-[خط قرمزها]
+[خط قرمزها - بسیار مهم]
 - پاسخ‌ها باید روان و در حد ۲ تا ۳ پاراگراف کوتاه باشند.
-- **بسیار مهم: هرگز جمله‌ات را نیمه‌کاره رها نکن. پاسخ تو باید حتماً با نقطه (.) یا علامت سوال (؟) تمام شود.**
+- **تحت هیچ شرایطی جمله، نقل‌قول یا لیست خود را نیمه‌کاره رها نکن. پاسخ تو باید حتماً با نقطه (.)، علامت سوال (؟) یا بستن گیومه («) به پایان برسد.**
 - اگر کاربر نشانه‌های آزار و اذیت شدید، خودکشی یا بحران حاد را نشان داد، با دلسوزی او را به اورژانس اجتماعی (۱۲۳) یا صدای مشاور (۱۴۸۰) ارجاع بده.
 """
 # ==========================================
 
 class ChatRequest(BaseModel):
     messages: list
-    profile_id: str # 👈 اضافه شدن شناسه پروفایل برای کشینگ
+    profile_id: str
 
 @app.post("/chat")
 async def chat(request: ChatRequest):
@@ -57,7 +57,7 @@ async def chat(request: ChatRequest):
     headers = {
         "Authorization": f"Bearer {API_TOKEN}",
         "Content-Type": "application/json",
-        "x-session-affinity": request.profile_id # 👈 فعال‌سازی کشینگ کلادفلر
+        "x-session-affinity": request.profile_id
     }
     
     system_message = {"role": "system", "content": SYSTEM_PROMPT}
@@ -65,7 +65,7 @@ async def chat(request: ChatRequest):
     payload = {
         "model": MODEL_NAME,
         "messages": [system_message] + request.messages,
-        "max_tokens": 1024, # 👈 افزایش سقف توکن برای جلوگیری از قطع شدن جمله
+        "max_tokens": 2048, # 👈 افزایش شدید فضا برای جلوگیری از قطع شدن جملات
         "temperature": 0.75 
     }
     
@@ -75,7 +75,14 @@ async def chat(request: ChatRequest):
         data = response.json()
         
         if "choices" in data and len(data["choices"]) > 0:
-            reply_text = data["choices"][0]["message"]["content"]
+            choice = data["choices"][0]
+            reply_text = choice["message"]["content"]
+            finish_reason = choice.get("finish_reason", "")
+            
+            # بررسی اینکه آیا مدل به دلیل محدودیت توکن نصفه مونده یا نه
+            if finish_reason == "length":
+                reply_text += "\n\n*(پاسخ به دلیل طولانی شدن قطع شد. لطفاً از من بخواهید ادامه دهم.)*"
+
             if not reply_text or len(reply_text.strip()) < 10:
                 reply_text = "من کاملاً درکت می‌کنم. دوست داری بیشتر در این مورد صحبت کنیم؟"
             return {"reply": reply_text}
@@ -593,7 +600,6 @@ def read_root():
                         const res = await fetch('/chat', {
                             method: 'POST',
                             headers: {'Content-Type': 'application/json'},
-                            // 👈 ارسال شناسه پروفایل به بک‌اند برای کشینگ
                             body: JSON.stringify({ 
                                 messages: apiMessages,
                                 profile_id: currentProfileId 
