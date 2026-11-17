@@ -65,12 +65,12 @@ async def chat(request: ChatRequest):
     payload = {
         "model": MODEL_NAME,
         "messages": [system_message] + request.messages,
-        "max_tokens": 2048, # 👈 افزایش شدید فضا برای جلوگیری از قطع شدن جملات
+        "max_tokens": 3048, # 👈 افزایش شدید فضا برای جلوگیری از قطع شدن جملات
         "temperature": 0.75 
     }
     
     try:
-        response = requests.post(API_URL, headers=headers, json=payload, timeout=60)
+        response = requests.post(API_URL, headers=headers, json=payload, timeout=240)
         response.raise_for_status() 
         data = response.json()
         
