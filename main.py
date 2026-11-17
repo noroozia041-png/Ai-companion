@@ -39,14 +39,15 @@ SYSTEM_PROMPT = """
 3. **سوال پایانی:** یک سوال کوتاه و هوشمندانه برای ادامه مسیر.
 
 [خط قرمزها]
-- پاسخ‌ها نباید خیلی طولانی باشند (حداکثر ۱۵۰ کلمه).
-- هرگز جمله‌ات را نیمه‌کاره رها نکن. در انتهای هر پیام حتماً یک سوال بپرس.
+- پاسخ‌ها باید روان و در حد ۲ تا ۳ پاراگراف کوتاه باشند.
+- **بسیار مهم: هرگز جمله‌ات را نیمه‌کاره رها نکن. پاسخ تو باید حتماً با نقطه (.) یا علامت سوال (؟) تمام شود.**
 - اگر کاربر نشانه‌های آزار و اذیت شدید، خودکشی یا بحران حاد را نشان داد، با دلسوزی او را به اورژانس اجتماعی (۱۲۳) یا صدای مشاور (۱۴۸۰) ارجاع بده.
 """
 # ==========================================
 
 class ChatRequest(BaseModel):
     messages: list
+    profile_id: str # 👈 اضافه شدن شناسه پروفایل برای کشینگ
 
 @app.post("/chat")
 async def chat(request: ChatRequest):
@@ -55,7 +56,8 @@ async def chat(request: ChatRequest):
     
     headers = {
         "Authorization": f"Bearer {API_TOKEN}",
-        "Content-Type": "application/json"
+        "Content-Type": "application/json",
+        "x-session-affinity": request.profile_id # 👈 فعال‌سازی کشینگ کلادفلر
     }
     
     system_message = {"role": "system", "content": SYSTEM_PROMPT}
@@ -63,7 +65,7 @@ async def chat(request: ChatRequest):
     payload = {
         "model": MODEL_NAME,
         "messages": [system_message] + request.messages,
-        "max_tokens": 800,
+        "max_tokens": 1024, # 👈 افزایش سقف توکن برای جلوگیری از قطع شدن جمله
         "temperature": 0.75 
     }
     
@@ -110,7 +112,6 @@ def read_root():
                 ::-webkit-scrollbar { width: 6px; }
                 ::-webkit-scrollbar-thumb { background: #cbd5e1; border-radius: 10px; }
 
-                /* 👤 صفحه انتخاب و ساخت پروفایل */
                 .profile-screen {
                     position: fixed; top: 0; left: 0; width: 100%; height: 100%;
                     background: linear-gradient(135deg, #f0f2f5 0%, #e0e7ff 100%);
@@ -160,7 +161,6 @@ def read_root():
                 }
                 .profile-item:hover .delete-profile-btn { opacity: 1; background: #fee2e2; }
 
-                /* 🗂️ سایدبار و چت */
                 .main-app { display: flex; width: 100%; height: 100dvh; }
                 .sidebar {
                     width: 280px; background-color: var(--sidebar-bg); border-left: 1px solid var(--border-color);
@@ -298,7 +298,6 @@ def read_root():
                 let allChats = [];
                 let currentChatId = null;
 
-                // 🔄 سیستم مهاجرت داده‌ها
                 function migrateOldData() {
                     const oldData = localStorage.getItem('marhamAppData');
                     if (oldData && !localStorage.getItem('marhamProfiles')) {
@@ -331,7 +330,6 @@ def read_root():
                     }
                 }
 
-                // نمایش لیست پروفایل‌ها با دکمه حذف
                 function renderProfileList() {
                     const listDiv = document.getElementById('profile-list');
                     if (profiles.length === 0) {
@@ -360,15 +358,14 @@ def read_root():
 
                         infoDiv.appendChild(avatar);
                         infoDiv.appendChild(name);
-                        infoDiv.onclick = () => loginToProfile(p.id); // کلیک روی نام برای ورود
+                        infoDiv.onclick = () => loginToProfile(p.id);
 
-                        // دکمه حذف پروفایل
                         const delBtn = document.createElement('span');
                         delBtn.className = 'delete-profile-btn';
                         delBtn.innerHTML = '✕';
                         delBtn.title = "حذف پروفایل";
                         delBtn.onclick = (e) => {
-                            e.stopPropagation(); // جلوگیری از ورود به پروفایل
+                            e.stopPropagation();
                             deleteProfile(p.id);
                         };
 
@@ -399,19 +396,12 @@ def read_root():
                     loginToProfile(newProfile.id);
                 }
 
-                // حذف پروفایل و تمام داده‌های مربوط به آن
                 function deleteProfile(profileId) {
                     if (confirm("آیا مطمئن هستید که می‌خواهید این پروفایل و تمام چت‌های مربوط به آن را برای همیشه حذف کنید؟")) {
-                        // ۱. حذف از لیست آرایه
                         profiles = profiles.filter(p => p.id !== profileId);
-                        
-                        // ۲. آپدیت حافظه مرورگر برای لیست پروفایل‌ها
                         localStorage.setItem('marhamProfiles', JSON.stringify(profiles));
-                        
-                        // ۳. حذف تاریخچه چت‌های این پروفایل از حافظه
                         localStorage.removeItem('marhamChats_' + profileId);
                         
-                        // ۴. اگر پروفایلِ در حال حاضر لاگین شده بود، خارج شو
                         if (currentProfileId === profileId) {
                             logout();
                         } else {
@@ -446,7 +436,6 @@ def read_root():
                     renderProfileList();
                 }
 
-                // 💬 مدیریت چت‌ها
                 function getStorageKey() {
                     return `marhamChats_${currentProfileId}`;
                 }
@@ -569,7 +558,6 @@ def read_root():
                     sidebar.classList.toggle('open');
                 }
 
-                // 🚀 ارسال پیام
                 msgInput.addEventListener('input', function() {
                     this.style.height = 'auto';
                     this.style.height = (this.scrollHeight) + 'px';
@@ -605,7 +593,11 @@ def read_root():
                         const res = await fetch('/chat', {
                             method: 'POST',
                             headers: {'Content-Type': 'application/json'},
-                            body: JSON.stringify({ messages: apiMessages })
+                            // 👈 ارسال شناسه پروفایل به بک‌اند برای کشینگ
+                            body: JSON.stringify({ 
+                                messages: apiMessages,
+                                profile_id: currentProfileId 
+                            })
                         });
                         const data = await res.json();
                         const reply = data.reply || data.detail || "خطای نامشخص";
